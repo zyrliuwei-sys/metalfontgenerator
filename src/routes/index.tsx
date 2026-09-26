@@ -4,100 +4,47 @@ import { envConfigs } from '@/config';
 import { socialMeta } from '@/lib/seo';
 import { m } from '@/paraglide/messages.js';
 import { getLocale, locales, localizeUrl } from '@/paraglide/runtime.js';
-import { Audiences } from '@/blocks/audiences';
-import { ChangesKeeps } from '@/blocks/changes-keeps';
-import { Compare } from '@/blocks/compare';
-import { CTA } from '@/blocks/cta';
-import { FAQ, FAQ_KEYS } from '@/blocks/faq';
-import { Features } from '@/blocks/features';
-import { Footer } from '@/blocks/footer';
-import { FreeTier } from '@/blocks/free-tier';
-import { Gallery } from '@/blocks/gallery';
-import { Header } from '@/blocks/header';
-import { Hero } from '@/blocks/hero';
-import { HowItWorks } from '@/blocks/how-it-works';
-import { Pricing } from '@/blocks/pricing';
-import { Rooms } from '@/blocks/rooms';
-import { StyleGuide } from '@/blocks/style-guide';
-import { SupportWidget } from '@/blocks/support-widget';
+import { MetalFontStudio } from '@/blocks/metal-font-studio';
 
 function HomePage() {
-  return (
-    <div className="bg-background text-foreground flex min-h-screen flex-col">
-      <Header />
-      <main>
-        <Hero />
-        <HowItWorks />
-        <Features />
-        <ChangesKeeps />
-        <Gallery />
-        <StyleGuide />
-        <FreeTier />
-        <Pricing />
-        <Compare />
-        <Rooms />
-        <Audiences />
-        <FAQ />
-        <CTA />
-      </main>
-      <Footer />
-      <SupportWidget />
-    </div>
-  );
+  return <MetalFontStudio />;
 }
 
-/** Schema.org @graph — WebApplication + FAQPage (mirrors the on-page FAQ) + BreadcrumbList. */
-function seoSchema(locale: string, homeUrl: string) {
-  const L = locale as any;
+function seoSchema(homeUrl: string, description: string, locale: string) {
+  const localized = { locale: locale as any };
+
   return {
     '@context': 'https://schema.org',
     '@graph': [
       {
         '@type': 'WebApplication',
-        name: `${envConfigs.app_name} — AI Room Design`,
+        name: m['metal.brand.name']({}, localized),
         url: homeUrl,
         applicationCategory: 'DesignApplication',
         operatingSystem: 'Web browser',
-        offers: {
-          '@type': 'Offer',
-          price: '0',
-          priceCurrency: 'USD',
-          description:
-            'First design free with a free account (one per account, watermarked, personal use); paid credits from $5',
-        },
+        description,
       },
       {
         '@type': 'FAQPage',
-        mainEntity: FAQ_KEYS.map((key) => ({
+        mainEntity: [
+          ['metal.seo.faq.q1', 'metal.seo.faq.a1'],
+          ['metal.seo.faq.q2', 'metal.seo.faq.a2'],
+          ['metal.seo.faq.q3', 'metal.seo.faq.a3'],
+        ].map(([question, answer]) => ({
           '@type': 'Question',
-          name: m[`landing.faq.${key}.question` as 'landing.faq.free.question'](
-            {},
-            { locale: L }
-          ),
+          name: m[question as 'metal.seo.faq.q1']({}, localized),
           acceptedAnswer: {
             '@type': 'Answer',
-            text: m[`landing.faq.${key}.answer` as 'landing.faq.free.answer'](
-              {},
-              { locale: L }
-            ),
+            text: m[answer as 'metal.seo.faq.a1']({}, localized),
           },
         })),
-      },
-      {
-        '@type': 'BreadcrumbList',
-        itemListElement: [
-          { '@type': 'ListItem', position: 1, name: 'Home', item: homeUrl },
-        ],
       },
     ],
   };
 }
 
 export const Route = createFileRoute('/')({
-  loader: () => {
-    const locale = getLocale();
-    return { locale };
-  },
+  loader: () => ({ locale: getLocale() }),
   head: ({ loaderData }) => {
     const locale = loaderData?.locale ?? 'en';
     const urlFor = (loc: string) =>
@@ -107,6 +54,7 @@ export const Route = createFileRoute('/')({
       {},
       { locale: locale as any }
     );
+
     return {
       meta: [
         { title },
@@ -126,7 +74,9 @@ export const Route = createFileRoute('/')({
       scripts: [
         {
           type: 'application/ld+json',
-          children: JSON.stringify(seoSchema(locale, urlFor(locale))),
+          children: JSON.stringify(
+            seoSchema(urlFor(locale), description, locale)
+          ),
         },
       ],
     };

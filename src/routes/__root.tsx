@@ -24,6 +24,10 @@ import { SandboxPreviewBridge } from '@/components/sandbox-preview-bridge';
 import { Toaster } from '@/components/ui/sonner';
 
 import '@fontsource-variable/inter';
+import '@fontsource-variable/ibm-plex-sans';
+import '@fontsource/ibm-plex-mono/400.css';
+import '@fontsource/ibm-plex-mono/500.css';
+import '@fontsource-variable/space-grotesk';
 import '@fontsource/libre-baskerville/400.css';
 import '@fontsource/libre-baskerville/700.css';
 import '@fontsource/libre-baskerville/400-italic.css';
@@ -85,8 +89,8 @@ function RootComponent() {
     <QueryClientProvider client={getQueryClient()}>
       <ThemeProvider
         attribute="class"
-        defaultTheme="system"
-        enableSystem
+        defaultTheme="dark"
+        enableSystem={false}
         disableTransitionOnChange
       >
         <Outlet />

@@ -5,7 +5,7 @@ import { apiGet } from '@/lib/api-client';
 export type PublicConfig = Record<string, string>;
 
 // Public runtime config (auth methods, social login ids, …) — shared by
-// sign-in/sign-up/forgot-password/google-one-tap/pricing. Deduped and
+// sign-in/sign-up/forgot-password/google-one-tap. Deduped and
 // cached by react-query.
 export function usePublicConfig() {
   return useQuery({

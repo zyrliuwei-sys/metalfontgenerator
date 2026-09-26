@@ -1,16 +1,13 @@
 import { useEffect, useState } from 'react';
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
 import { createFileRoute } from '@tanstack/react-router';
-import { Coins } from 'lucide-react';
 
 import { tDynamic } from '@/core/i18n/dynamic';
-import { Link } from '@/core/i18n/navigation';
 import { apiGet, type PageResult } from '@/lib/api-client';
 import { cn } from '@/lib/utils';
 import { m } from '@/paraglide/messages.js';
 import { DataTable, type Column } from '@/components/data-table';
 import { Badge } from '@/components/ui/badge';
-import { buttonVariants } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
 type CreditRow = {
@@ -144,19 +141,7 @@ function CreditsPage() {
 
       <Card className="max-w-md">
         <CardHeader>
-          <div className="flex items-center justify-between">
-            <CardTitle>{m['settings.credits.balance']()}</CardTitle>
-            <Link
-              href="/pricing"
-              className={cn(
-                buttonVariants({ variant: 'outline', size: 'sm' }),
-                'gap-2'
-              )}
-            >
-              <Coins className="size-4" />
-              {m['settings.credits.purchase']()}
-            </Link>
-          </div>
+          <CardTitle>{m['settings.credits.balance']()}</CardTitle>
         </CardHeader>
         <CardContent>
           <p className="text-3xl font-bold">

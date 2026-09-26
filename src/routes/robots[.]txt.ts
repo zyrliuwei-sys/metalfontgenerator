@@ -12,9 +12,8 @@ export const Route = createFileRoute('/robots.txt')({
           'Disallow: /admin',
           'Disallow: /settings',
           'Disallow: /api/',
-          // Blocks all query-string URLs — including ?room= deep links, which
-          // is fine (canonicals point at the bare paths). Remove this line
-          // before adding paginated list pages that rely on ?page=.
+          // Keep query-string variants out of the index until a page needs
+          // crawlable parameterized URLs.
           'Disallow: /*?*',
           '',
           `Sitemap: ${envConfigs.app_url}/sitemap.xml`,

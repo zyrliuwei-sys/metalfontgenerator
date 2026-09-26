@@ -3,7 +3,6 @@ import type { ComponentType, CSSProperties, SVGProps } from 'react';
 import { Link } from '@/core/i18n/navigation';
 import { envConfigs } from '@/config';
 import { cn } from '@/lib/utils';
-import { FooterBadgeList } from '@/components/footer-badge-list';
 
 export interface FooterColumn {
   title: string;
@@ -24,13 +23,16 @@ export function SiteFooter({
   columns,
   socials,
   copyright,
+  brandName,
 }: {
   columns?: FooterColumn[];
   socials?: FooterSocial[];
   copyright?: string;
+  brandName?: string;
 }) {
   const year = new Date().getFullYear();
   const pages = columns?.flatMap((column) => column.links) ?? [];
+  const resolvedBrandName = brandName || envConfigs.app_name;
 
   return (
     <footer className="relative w-full overflow-hidden border-t border-neutral-700 bg-neutral-800 px-4 py-14 text-neutral-100 sm:px-8 sm:py-20">
@@ -38,7 +40,7 @@ export function SiteFooter({
         <div className="flex w-full flex-col items-center justify-center">
           <Link
             href="/"
-            aria-label={envConfigs.app_name}
+            aria-label={resolvedBrandName}
             className="relative z-20 flex items-center gap-3 px-2 py-1 text-sm font-normal"
           >
             <img
@@ -48,9 +50,7 @@ export function SiteFooter({
               height={30}
               className="size-[30px] rounded-md"
             />
-            <span className="font-medium text-white">
-              {envConfigs.app_name}
-            </span>
+            <span className="font-medium text-white">{resolvedBrandName}</span>
           </Link>
 
           {pages.length > 0 && (
@@ -85,8 +85,6 @@ export function SiteFooter({
 
           <GridLineHorizontal className="mx-auto mt-8 max-w-7xl" />
         </div>
-
-        <FooterBadgeList className="mt-8" />
 
         <div className="mt-8 flex w-full flex-col items-end justify-between gap-6 sm:flex-row">
           <span className="text-right text-sm text-neutral-400">

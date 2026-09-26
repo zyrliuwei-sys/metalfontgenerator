@@ -1,13 +1,13 @@
 {
-  "name": "redocor ai",
-  "slug": "redocorai",
-  "description": "An AI floor-plan and room design platform that turns a room photo or layout into a photorealistic interior concept with one click.",
-  "support_email": "support@redocor.com",
+  "name": "metalfontgeneratorai",
+  "slug": "metalfontgeneratorai",
+  "description": "An AI platform for creating polished 3D metallic lettering, chrome text, and dimensional metal typography from a word or phrase.",
+  "support_email": "support@metalfontgenerator.org",
   "features": [
-    "One-click AI room design",
-    "AI floor-plan visualization",
-    "Photorealistic interior concepts",
-    "Room styles and custom instructions",
-    "Saved designs with image downloads"
+    "AI-generated 3D metal lettering",
+    "Chrome, steel, gold, silver, and brushed metal styles",
+    "Custom prompts for lighting, depth, bevels, and perspective",
+    "Fast visual exploration for logos, titles, posters, and social graphics",
+    "Saved generations with high-resolution image downloads"
   ]
 }

@@ -1,6 +1,4 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
-  <rect width="512" height="512" rx="112" fill="#000000"/>
-  <text x="50%" y="50%" dy="0.04em" text-anchor="middle" dominant-baseline="central"
-        font-family="-apple-system, Inter, ui-sans-serif, system-ui, sans-serif"
-        font-size="320" font-weight="700" fill="#ffffff">R</text>
+  <rect width="512" height="512" rx="112" fill="#25211d"/>
+  <path d="M106 370V142h70l80 116 80-116h70v228h-58V230l-92 130-92-130v140z" fill="#e7a35a"/>
 </svg>

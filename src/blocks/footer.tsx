@@ -6,12 +6,11 @@ export function Footer() {
     <SiteFooter
       columns={[
         {
-          title: m['landing.footer.col_product'](),
-          links: [{ label: m['landing.nav.pricing'](), href: '/pricing' }],
-        },
-        {
-          title: m['landing.footer.col_resources'](),
-          links: [{ label: m['landing.nav.faq'](), href: '/#faq' }],
+          title: m['metal.footer.product'](),
+          links: [
+            { label: m['metal.nav.studio'](), href: '/#workbench' },
+            { label: m['metal.nav.materials'](), href: '/#materials' },
+          ],
         },
         {
           title: m['landing.footer.col_legal'](),

@@ -5,7 +5,6 @@ import { z } from 'zod';
 
 import { authClient, signIn, useSession } from '@/core/auth/client';
 import { Link, useRouter } from '@/core/i18n/navigation';
-import { envConfigs } from '@/config';
 import { resolveAfterAuthUrl, safeInternalPath } from '@/lib/redirect';
 import { m } from '@/paraglide/messages.js';
 import { localizeHref } from '@/paraglide/runtime.js';
@@ -135,7 +134,7 @@ function SignInPage() {
     <div className="bg-muted flex min-h-svh flex-col items-center justify-center gap-6 p-6 md:p-10">
       <div className="flex w-full max-w-sm flex-col gap-6">
         <Link href="/" className="self-center font-serif text-lg italic">
-          {configs.app_name || envConfigs.app_name}
+          {m['metal.brand.auth_name']()}
         </Link>
         <Card>
           <CardHeader className="text-center">

@@ -3,3 +3,10 @@ allowBuilds:
   msw: false
   sharp: false
   workerd: false
+
+overrides:
+  browserslist: ^4.28.7
+  esbuild: ^0.25.4
+  js-yaml: ^4.3.2
+  postcss: ^8.5.18
+  ws: ^8.21.0

@@ -3,7 +3,6 @@ import { createFileRoute } from '@tanstack/react-router';
 
 import { signOut, useSession } from '@/core/auth/client';
 import { useRouter } from '@/core/i18n/navigation';
-import { envConfigs } from '@/config';
 import { m } from '@/paraglide/messages.js';
 import { localizeHref } from '@/paraglide/runtime.js';
 import { Button } from '@/components/ui/button';
@@ -105,7 +104,7 @@ function RedeemInvitePage() {
     <div className="bg-muted flex min-h-svh flex-col items-center justify-center gap-6 p-6 md:p-10">
       <div className="flex w-full max-w-sm flex-col gap-6">
         <span className="self-center font-serif text-lg italic">
-          {envConfigs.app_name}
+          {m['metal.brand.auth_name']()}
         </span>
         <Card>
           <CardHeader className="text-center">

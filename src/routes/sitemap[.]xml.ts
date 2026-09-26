@@ -4,14 +4,8 @@ import { envConfigs } from '@/config';
 import { baseLocale, locales, localizeUrl } from '@/paraglide/runtime.js';
 import { getLocalPosts, mergePosts } from '@/content/posts';
 
-import { ROOM_PATHS } from './(rooms)/-room-landing';
-
 export const STATIC_PATHS = [
   '',
-  '/room-design',
-  '/ai-room-design-free',
-  ...Object.values(ROOM_PATHS),
-  '/pricing',
   '/blog',
   '/privacy-policy',
   '/terms-of-service',

@@ -20,11 +20,8 @@ export function Header() {
   const user = session?.user;
 
   const navLinks = [
-    { href: '/room-design', label: m['landing.nav.create']() },
-    { href: '/#how', label: m['landing.nav.how']() },
-    { href: '/#gallery', label: m['landing.nav.gallery']() },
-    { href: '/pricing', label: m['landing.nav.pricing']() },
-    { href: '/#faq', label: m['landing.nav.faq']() },
+    { href: '/#workbench', label: m['metal.nav.studio']() },
+    { href: '/#materials', label: m['metal.nav.materials']() },
   ];
 
   return (

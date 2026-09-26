@@ -1,38 +1,31 @@
-// Cloudflare Workers deploy config — TEMPLATE.
-// The /deploy-cloudflare skill copies this to wrangler.jsonc (gitignored, your
-// working copy) and fills in the real values (D1 database_id, production URL).
+// Cloudflare Workers deploy config for metalfontgeneratorai.
+// Binding IDs and routes are safe to commit; provider credentials stay in
+// Cloudflare secrets or the admin settings database.
 // `pnpm cf:build` (NITRO_PRESET=cloudflare_module) merges wrangler.jsonc into
 // the generated .output/server/wrangler.json; deploy with `pnpm cf:deploy`.
 {
   "$schema": "node_modules/wrangler/config-schema.json",
-  "name": "shipany-tanstack",
+  "name": "metalfontgeneratorai",
+  "compatibility_date": "2026-09-24",
   "compatibility_flags": ["nodejs_compat"],
   "observability": {
     "enabled": true,
   },
   "vars": {
-    "DATABASE_PROVIDER": "d1",
+    "DATABASE_PROVIDER": "postgresql",
     // Server-side runtime fallbacks for the build-time VITE_* values — keep in
     // sync with .env.production (better-auth trustedOrigins, payment callbacks).
-    "VITE_APP_URL": "https://<worker>.<your-subdomain>.workers.dev",
-    "VITE_APP_NAME": "My App",
+    "VITE_APP_URL": "https://metalfontgenerator.org",
+    "VITE_APP_NAME": "metalfontgeneratorai",
   },
-  "d1_databases": [
-    {
-      "binding": "DB",
-      "database_name": "shipany-db",
-      "database_id": "REPLACE_WITH_OUTPUT_OF_WRANGLER_D1_CREATE",
-      "migrations_dir": "drizzle",
-    },
+  "routes": [
+    { "pattern": "metalfontgenerator.org", "custom_domain": true },
   ],
   // ── Postgres via Hyperdrive (instead of D1) ────────────────────────────────
-  // 1. npx wrangler hyperdrive create <name> --connection-string="postgres://..." (your direct PG url)
-  // 2. Set vars.DATABASE_PROVIDER to "postgresql" and remove the d1_databases block
-  // 3. Uncomment and fill the binding (the build keeps the postgres driver in
-  //    the bundle when DATABASE_PROVIDER=postgresql — see vite.config.ts):
-  // "hyperdrive": [
-  //   { "binding": "HYPERDRIVE", "id": "REPLACE_WITH_OUTPUT_OF_WRANGLER_HYPERDRIVE_CREATE" }
-  // ]
+  // Existing Hyperdrive binding for the production Postgres database.
+  "hyperdrive": [
+    { "binding": "HYPERDRIVE", "id": "f1ab0ea7da274e7da869b3e2ba4a68b2" },
+  ],
   //
   // Other optional bindings — uncomment when needed:
   // "kv_namespaces":  [{ "binding": "CACHE",  "id": "..." }],

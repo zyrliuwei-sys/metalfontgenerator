@@ -1,0 +1,66 @@
+/* metalfontgenerator · macrostructure: Marquee Workbench · tone: technical-luxury · anchor hue: annealed copper */
+
+:root {
+  --color-obsidian: oklch(0.145 0.016 274);
+  --color-graphite: oklch(0.195 0.019 274);
+  --color-slate: oklch(0.275 0.022 274);
+  --color-silver: oklch(0.735 0.018 274);
+  --color-porcelain: oklch(0.94 0.014 90);
+  --color-copper: oklch(0.665 0.12 58);
+  --color-copper-soft: oklch(0.765 0.075 76);
+  --color-mist: oklch(0.505 0.019 274);
+  --color-danger: oklch(0.67 0.18 28);
+  --color-focus: oklch(0.84 0.1 76);
+
+  --font-display: 'Space Grotesk', 'Arial Narrow', sans-serif;
+  --font-body:
+    'Inter Variable', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-mono: 'SFMono-Regular', Consolas, 'Liberation Mono', monospace;
+  --font-metal-display: 'IBM Plex Sans Variable', 'Arial Narrow', sans-serif;
+  --font-metal-body: 'IBM Plex Sans Variable', 'Segoe UI', sans-serif;
+  --font-metal-mono: 'IBM Plex Mono', 'SFMono-Regular', monospace;
+
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.25rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+  --space-10: 2.5rem;
+  --space-12: 3rem;
+  --space-16: 4rem;
+  --space-20: 5rem;
+  --space-24: 6rem;
+
+  --text-xs: 0.6875rem;
+  --text-sm: 0.8125rem;
+  --text-md: 0.9375rem;
+  --text-lg: 1.125rem;
+  --text-xl: 1.5rem;
+  --text-hero: clamp(3.5rem, 9vw, 8.75rem);
+
+  --rule-subtle: color-mix(in oklab, var(--color-silver) 13%, transparent);
+  --rule-strong: color-mix(in oklab, var(--color-silver) 25%, transparent);
+  --rule-copper: color-mix(in oklab, var(--color-copper) 55%, transparent);
+
+  --radius-sm: 0.25rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.875rem;
+  --radius-pill: 999px;
+
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-in: cubic-bezier(0.64, 0, 0.78, 0);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --dur-fast: 150ms;
+  --dur-base: 260ms;
+  --dur-slow: 650ms;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --dur-fast: 0ms;
+    --dur-base: 0ms;
+    --dur-slow: 150ms;
+  }
+}
