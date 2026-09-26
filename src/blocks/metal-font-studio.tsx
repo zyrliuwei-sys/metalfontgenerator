@@ -22,6 +22,7 @@ import {
 import { signIn } from '@/core/auth/client';
 import { Link } from '@/core/i18n/navigation';
 import { envConfigs } from '@/config';
+import { exportMetalFont } from '@/lib/metal-font-export';
 import { m } from '@/paraglide/messages.js';
 import { SiteFooter } from '@/components/site-footer';
 
@@ -376,6 +377,8 @@ export function MetalFontStudio() {
     'idle' | 'generating' | 'ready' | 'exported'
   >('idle');
   const [filename, setFilename] = useState('');
+  const [isExporting, setIsExporting] = useState(false);
+  const [exportError, setExportError] = useState('');
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const reset = () => {
@@ -393,6 +396,31 @@ export function MetalFontStudio() {
   const generate = () => {
     setStatus('generating');
     window.setTimeout(() => setStatus('ready'), 820);
+  };
+
+  const download = async () => {
+    setIsExporting(true);
+    setExportError('');
+    try {
+      const preview = document.querySelector('.metal-word-workbench');
+      const fontFamily = preview
+        ? getComputedStyle(preview).fontFamily
+        : 'sans-serif';
+      await exportMetalFont({
+        word: word || 'TYPE',
+        finish,
+        angle,
+        extrusion,
+        light,
+        tracking,
+        fontFamily,
+      });
+      setStatus('exported');
+    } catch {
+      setExportError(m['metal.studio.export_error']());
+    } finally {
+      setIsExporting(false);
+    }
   };
 
   const currentStatus =
@@ -688,13 +716,20 @@ export function MetalFontStudio() {
                 <button
                   type="button"
                   className="metal-export-button"
-                  onClick={() => setStatus('exported')}
-                  disabled={status === 'generating'}
+                  onClick={download}
+                  disabled={status === 'generating' || isExporting}
                   aria-label={m['metal.studio.export']()}
+                  title={m['metal.studio.export']()}
+                  aria-busy={isExporting}
                 >
                   <Download size={16} aria-hidden="true" />
                 </button>
               </div>
+              {exportError ? (
+                <p className="metal-login-error" role="alert">
+                  {exportError}
+                </p>
+              ) : null}
               <p className="metal-credit-note">
                 <SlidersHorizontal size={14} aria-hidden="true" />
                 {m['metal.studio.credit_note']()}
