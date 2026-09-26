@@ -6,7 +6,7 @@ import { getLocalPosts, mergePosts } from '@/content/posts';
 
 export const STATIC_PATHS = [
   '',
-  '/blog',
+  '/heavy-metal-font-generator',
   '/privacy-policy',
   '/terms-of-service',
 ];
@@ -50,7 +50,7 @@ export const Route = createFileRoute('/sitemap.xml')({
       GET: async () => {
         const entries: Entry[] = STATIC_PATHS.map((path) => ({
           path,
-          changeFrequency: path === '/blog' ? 'daily' : 'weekly',
+          changeFrequency: 'weekly',
           priority: path === '' ? 1 : 0.8,
         }));
 

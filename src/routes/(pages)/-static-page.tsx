@@ -2,6 +2,7 @@ import type { ComponentType } from 'react';
 import { notFound, useLoaderData } from '@tanstack/react-router';
 
 import { envConfigs } from '@/config';
+import { socialMeta } from '@/lib/seo';
 import { m } from '@/paraglide/messages.js';
 import {
   baseLocale,
@@ -58,7 +59,14 @@ export function staticPageRouteOptions(slug: string) {
       return {
         meta: [
           { title: meta.title },
+          { name: 'robots', content: 'index,follow' },
           { name: 'description', content: meta.description },
+          ...socialMeta({
+            title: meta.title,
+            description: meta.description,
+            url: urlFor(locale),
+            locale,
+          }),
         ],
         links: [
           { rel: 'canonical', href: urlFor(locale) },
@@ -87,7 +95,7 @@ function StaticPage() {
     <article>
       <header className="border-border mb-6 border-b pb-5">
         <h1 className="text-foreground text-3xl font-semibold tracking-tight md:text-4xl">
-          {meta.title}
+          {meta.title.split(' | ')[0]}
         </h1>
         <p className="text-muted-foreground mt-2 text-sm">{meta.description}</p>
         <p className="text-muted-foreground mt-2 text-xs">

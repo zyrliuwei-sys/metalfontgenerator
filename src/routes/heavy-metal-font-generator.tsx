@@ -3,45 +3,22 @@ import { createFileRoute } from '@tanstack/react-router';
 import { envConfigs } from '@/config';
 import { faqSchema, metalFaq } from '@/lib/metal-faq';
 import { socialMeta } from '@/lib/seo';
-import { m } from '@/paraglide/messages.js';
 import { getLocale, locales, localizeUrl } from '@/paraglide/runtime.js';
 import { MetalFontStudio } from '@/blocks/metal-font-studio';
 
-function HomePage() {
-  return <MetalFontStudio />;
-}
+const title =
+  'Heavy Metal Font Generator - Free Heavy Metal Text Maker | Metal Font Generator';
+const description =
+  'Free heavy metal font generator. Turn any band name into classic heavy metal lettering - spiked, chrome or vintage styles - ready to download for merch.';
 
-function seoSchema(homeUrl: string, description: string, locale: string) {
-  const localized = { locale: locale as any };
-
-  return {
-    '@context': 'https://schema.org',
-    '@graph': [
-      {
-        '@type': 'WebApplication',
-        name: m['metal.brand.name']({}, localized),
-        url: homeUrl,
-        applicationCategory: 'DesignApplication',
-        operatingSystem: 'Web browser',
-        description,
-      },
-      faqSchema(metalFaq('home', locale as 'en' | 'zh')),
-    ],
-  };
-}
-
-export const Route = createFileRoute('/')({
+export const Route = createFileRoute('/heavy-metal-font-generator')({
   loader: () => ({ locale: getLocale() }),
   head: ({ loaderData }) => {
     const locale = loaderData?.locale ?? 'en';
-    const urlFor = (loc: string) =>
-      localizeUrl(`${envConfigs.app_url}/`, { locale: loc as any }).href;
-    const title = m['common.metadata.title']({}, { locale: locale as any });
-    const description = m['common.metadata.description'](
-      {},
-      { locale: locale as any }
-    );
-
+    const urlFor = (loc: (typeof locales)[number]) =>
+      localizeUrl(`${envConfigs.app_url}/heavy-metal-font-generator`, {
+        locale: loc,
+      }).href;
     return {
       meta: [
         { title },
@@ -61,12 +38,23 @@ export const Route = createFileRoute('/')({
       scripts: [
         {
           type: 'application/ld+json',
-          children: JSON.stringify(
-            seoSchema(urlFor(locale), description, locale)
-          ),
+          children: JSON.stringify({
+            '@context': 'https://schema.org',
+            '@graph': [
+              {
+                '@type': 'WebApplication',
+                name: 'Heavy Metal Font Generator',
+                url: urlFor(locale),
+                description,
+                applicationCategory: 'DesignApplication',
+                operatingSystem: 'Web browser',
+              },
+              faqSchema(metalFaq('heavy', locale)),
+            ],
+          }),
         },
       ],
     };
   },
-  component: HomePage,
+  component: () => <MetalFontStudio heavy />,
 });

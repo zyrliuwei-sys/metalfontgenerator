@@ -22,6 +22,7 @@ import {
 import { signIn } from '@/core/auth/client';
 import { Link } from '@/core/i18n/navigation';
 import { envConfigs } from '@/config';
+import { metalFaq } from '@/lib/metal-faq';
 import { exportMetalFont } from '@/lib/metal-font-export';
 import { m } from '@/paraglide/messages.js';
 import { SiteFooter } from '@/components/site-footer';
@@ -131,22 +132,86 @@ function SeoContent() {
         {paragraph(m['metal.seo.workflow.body']())}
         <h3>{m['metal.seo.creators.title']()}</h3>
         {paragraph(m['metal.seo.creators.body']())}
+        <h2>{m['metal.seo.copy.title']()}</h2>
+        {paragraph(m['metal.seo.copy.body']())}
+        <h2>{m['metal.seo.free.title']()}</h2>
+        {paragraph(m['metal.seo.free.body']())}
+        <p>
+          <Link href="/heavy-metal-font-generator">
+            Heavy Metal Font Generator
+          </Link>{' '}
+          — {m['metal.seo.heavy_link']()}
+        </p>
         <h3>{m['metal.seo.faq.title']()}</h3>
-        <div className="metal-seo-faq">
-          <div>
-            <h4>{m['metal.seo.faq.q1']()}</h4>
-            <p>{m['metal.seo.faq.a1']()}</p>
-          </div>
-          <div>
-            <h4>{m['metal.seo.faq.q2']()}</h4>
-            <p>{m['metal.seo.faq.a2']()}</p>
-          </div>
-          <div>
-            <h4>{m['metal.seo.faq.q3']()}</h4>
-            <p>{m['metal.seo.faq.a3']()}</p>
-          </div>
-        </div>
+        <Faq kind="home" />
       </article>
+    </section>
+  );
+}
+
+function Faq({ kind }: { kind: 'home' | 'heavy' }) {
+  return (
+    <div className="metal-seo-faq">
+      {metalFaq(kind).map(({ question, answer }) => (
+        <div key={question}>
+          <h4>{question}</h4>
+          <p>{answer}</p>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function HeavyIntro() {
+  return (
+    <section className="metal-seo-section">
+      <div className="metal-seo-lead">
+        <p className="metal-kicker">{m['metal.heavy.kicker']()}</p>
+        <h2>What Makes Heavy Metal Lettering Different</h2>
+      </div>
+      <div className="metal-seo-copy">
+        <p>{m['metal.heavy.intro']()}</p>
+        <div className="metal-material-grid">
+          {[
+            { word: 'THUNDER', finish: 'steel', angle: 0, depth: 22 },
+            { word: 'IRON RITE', finish: 'copper', angle: 22, depth: 18 },
+            { word: 'MIDNIGHT', finish: 'black-chrome', angle: 38, depth: 26 },
+          ].map((item) => (
+            <article className="metal-material-card" key={item.word}>
+              <MetalWord
+                word={item.word}
+                finish={item.finish as Finish}
+                angle={item.angle}
+                extrusion={item.depth}
+                light={80}
+                tracking={-1}
+                className="metal-word-card"
+              />
+              <div className="metal-card-caption">
+                <span>{item.word}</span>
+                <span>{item.finish}</span>
+              </div>
+            </article>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function HeavyContent() {
+  return (
+    <section className="metal-seo-section">
+      <div className="metal-seo-copy">
+        <h2>Heavy vs Death vs Black Metal Lettering</h2>
+        <p>{m['metal.heavy.comparison']()}</p>
+        <p>
+          <Link href="/">metal font generator</Link> —{' '}
+          {m['metal.heavy.home_link']()}
+        </p>
+        <h2>Heavy Metal Font Generator FAQ</h2>
+        <Faq kind="heavy" />
+      </div>
     </section>
   );
 }
@@ -270,7 +335,7 @@ function LoginPanel({ onClose }: { onClose: () => void }) {
   );
 }
 
-function Header() {
+export function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [loginOpen, setLoginOpen] = useState(false);
 
@@ -287,6 +352,9 @@ function Header() {
           <nav className="metal-nav" aria-label={m['metal.nav.label']()}>
             <Link href="/#workbench">{m['metal.nav.studio']()}</Link>
             <Link href="/#materials">{m['metal.nav.materials']()}</Link>
+            <Link href="/heavy-metal-font-generator">
+              Heavy Metal Font Generator
+            </Link>
           </nav>
           <div className="metal-header-actions">
             <button
@@ -310,6 +378,12 @@ function Header() {
         </div>
         {menuOpen ? (
           <nav className="metal-mobile-nav" aria-label={m['metal.nav.label']()}>
+            <Link
+              href="/heavy-metal-font-generator"
+              onClick={() => setMenuOpen(false)}
+            >
+              Heavy Metal Font Generator
+            </Link>
             <Link href="/#workbench" onClick={() => setMenuOpen(false)}>
               {m['metal.nav.studio']()}
             </Link>
@@ -365,14 +439,14 @@ function RangeControl({
   );
 }
 
-export function MetalFontStudio() {
-  const [word, setWord] = useState('FORGE');
+export function MetalFontStudio({ heavy = false }: { heavy?: boolean }) {
+  const [word, setWord] = useState(heavy ? 'THUNDER' : 'FORGE');
   const [finish, setFinish] = useState<Finish>('steel');
-  const [orbit, setOrbit] = useState<Orbit>('three-quarter');
-  const [angle, setAngle] = useState(22);
-  const [extrusion, setExtrusion] = useState(14);
-  const [light, setLight] = useState(72);
-  const [tracking, setTracking] = useState(0);
+  const [orbit, setOrbit] = useState<Orbit>(heavy ? 'front' : 'three-quarter');
+  const [angle, setAngle] = useState(heavy ? 0 : 22);
+  const [extrusion, setExtrusion] = useState(heavy ? 22 : 14);
+  const [light, setLight] = useState(heavy ? 85 : 72);
+  const [tracking, setTracking] = useState(heavy ? -1 : 0);
   const [status, setStatus] = useState<
     'idle' | 'generating' | 'ready' | 'exported'
   >('idle');
@@ -382,13 +456,13 @@ export function MetalFontStudio() {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const reset = () => {
-    setWord('FORGE');
+    setWord(heavy ? 'THUNDER' : 'FORGE');
     setFinish('steel');
-    setOrbit('three-quarter');
-    setAngle(22);
-    setExtrusion(14);
-    setLight(72);
-    setTracking(0);
+    setOrbit(heavy ? 'front' : 'three-quarter');
+    setAngle(heavy ? 0 : 22);
+    setExtrusion(heavy ? 22 : 14);
+    setLight(heavy ? 85 : 72);
+    setTracking(heavy ? -1 : 0);
     setStatus('idle');
     setFilename('');
   };
@@ -440,9 +514,13 @@ export function MetalFontStudio() {
         <section className="metal-hero">
           <div className="metal-hero-copy">
             <p className="metal-kicker">{m['metal.hero.kicker']()}</p>
-            <h1>{m['metal.hero.title']()}</h1>
+            <h1>
+              {heavy ? 'Heavy Metal Font Generator' : m['metal.hero.title']()}
+            </h1>
             <p className="metal-hero-description">
-              {m['metal.hero.description']()}
+              {heavy
+                ? m['metal.heavy.description']()
+                : m['metal.hero.description']()}
             </p>
             <div className="metal-hero-actions">
               <a className="metal-primary-button" href="#workbench">
@@ -460,11 +538,11 @@ export function MetalFontStudio() {
               </div>
               <div>
                 <span>{m['metal.hero.spec.angle']()}</span>
-                <strong>22°</strong>
+                <strong>{heavy ? '0°' : '22°'}</strong>
               </div>
               <div>
                 <span>{m['metal.hero.spec.depth']()}</span>
-                <strong>14px</strong>
+                <strong>{heavy ? '22px' : '14px'}</strong>
               </div>
             </div>
           </div>
@@ -475,27 +553,37 @@ export function MetalFontStudio() {
             <div className="metal-preview-grid" aria-hidden="true" />
             <div className="metal-orbit-label">
               <span>{m['metal.hero.preview_label']()}</span>
-              <span>22° / 14px</span>
+              <span>{heavy ? '0° / 22px' : '22° / 14px'}</span>
             </div>
             <MetalWord
-              word="FORM"
+              word={heavy ? 'THUNDER' : 'FORM'}
               className="metal-word-hero"
               finish="steel"
-              angle={22}
-              extrusion={14}
-              light={72}
-              tracking={0}
+              angle={heavy ? 0 : 22}
+              extrusion={heavy ? 22 : 14}
+              light={heavy ? 85 : 72}
+              tracking={heavy ? -1 : 0}
             />
           </div>
         </section>
+
+        {heavy ? <HeavyIntro /> : null}
 
         <section className="metal-workbench-section" id="workbench">
           <div className="metal-section-heading">
             <div>
               <p className="metal-kicker">{m['metal.studio.kicker']()}</p>
-              <h2>{m['metal.studio.title']()}</h2>
+              <h2>
+                {heavy
+                  ? 'How to Make Heavy Metal Text Online'
+                  : m['metal.studio.title']()}
+              </h2>
             </div>
-            <p>{m['metal.studio.description']()}</p>
+            <p>
+              {heavy
+                ? m['metal.heavy.workflow']()
+                : m['metal.studio.description']()}
+            </p>
           </div>
 
           <div className="metal-workbench">
@@ -552,6 +640,57 @@ export function MetalFontStudio() {
             </div>
 
             <div className="metal-controls">
+              {heavy ? (
+                <div className="metal-control-section">
+                  <span className="metal-label">
+                    {m['metal.heavy.presets']()}
+                  </span>
+                  <div className="metal-input-row">
+                    {[
+                      {
+                        label: 'Chrome',
+                        finish: 'steel',
+                        angle: 0,
+                        depth: 22,
+                        light: 85,
+                      },
+                      {
+                        label: 'Vintage',
+                        finish: 'copper',
+                        angle: 22,
+                        depth: 18,
+                        light: 64,
+                      },
+                      {
+                        label: 'Dark',
+                        finish: 'black-chrome',
+                        angle: 38,
+                        depth: 26,
+                        light: 56,
+                      },
+                    ].map((preset) => (
+                      <button
+                        type="button"
+                        className="metal-text-link"
+                        key={preset.label}
+                        onClick={() => {
+                          setFinish(preset.finish as Finish);
+                          setAngle(preset.angle);
+                          setExtrusion(preset.depth);
+                          setLight(preset.light);
+                          setTracking(-1);
+                          setOrbit(
+                            preset.angle === 0 ? 'front' : 'three-quarter'
+                          );
+                          setStatus('idle');
+                        }}
+                      >
+                        {preset.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              ) : null}
               <div className="metal-control-section metal-word-input-section">
                 <label className="metal-label" htmlFor="metal-word">
                   {m['metal.studio.word_label']()}
@@ -562,7 +701,11 @@ export function MetalFontStudio() {
                     className="metal-text-input"
                     value={word}
                     onChange={(event) =>
-                      setWord(event.target.value.toUpperCase().slice(0, 12))
+                      setWord(
+                        event.target.value
+                          .toUpperCase()
+                          .slice(0, heavy ? 40 : 12)
+                      )
                     }
                     placeholder={m['metal.studio.word_placeholder']()}
                     aria-describedby="metal-word-hint"
@@ -577,7 +720,9 @@ export function MetalFontStudio() {
                   </button>
                 </div>
                 <span id="metal-word-hint" className="metal-input-hint">
-                  {m['metal.studio.word_hint']()}
+                  {heavy
+                    ? m['metal.heavy.word_hint']()
+                    : m['metal.studio.word_hint']()}
                 </span>
               </div>
 
@@ -738,140 +883,159 @@ export function MetalFontStudio() {
           </div>
         </section>
 
-        <section className="metal-materials-section" id="materials">
-          <div className="metal-section-heading metal-section-heading-wide">
-            <div>
-              <p className="metal-kicker">{m['metal.materials.kicker']()}</p>
-              <h2>{m['metal.materials.title']()}</h2>
-            </div>
-            <Link href="/#workbench" className="metal-text-link">
-              {m['metal.materials.link']()}
-              <ArrowUpRight size={15} aria-hidden="true" />
-            </Link>
-          </div>
-          <div className="metal-material-grid">
-            <article className="metal-material-card metal-material-card-large metal-card-steel">
-              <MetalWord
-                word="STUDIO"
-                className="metal-word-card"
-                finish="steel"
-                angle={0}
-                extrusion={8}
-                light={83}
-                tracking={0}
-              />
-              <div className="metal-card-caption">
-                <span>{m['metal.materials.steel']()}</span>
-                <span>01</span>
+        {!heavy ? (
+          <>
+            <section className="metal-materials-section" id="materials">
+              <div className="metal-section-heading metal-section-heading-wide">
+                <div>
+                  <p className="metal-kicker">
+                    {m['metal.materials.kicker']()}
+                  </p>
+                  <h2>{m['metal.materials.title']()}</h2>
+                </div>
+                <Link href="/#workbench" className="metal-text-link">
+                  {m['metal.materials.link']()}
+                  <ArrowUpRight size={15} aria-hidden="true" />
+                </Link>
               </div>
-            </article>
-            <article className="metal-material-card metal-card-copper">
-              <MetalWord
-                word="HEAT"
-                className="metal-word-card metal-word-card-vertical"
-                finish="copper"
-                angle={38}
-                extrusion={15}
-                light={58}
-                tracking={1}
-              />
-              <div className="metal-card-caption">
-                <span>{m['metal.materials.copper']()}</span>
-                <span>02</span>
+              <div className="metal-material-grid">
+                <article className="metal-material-card metal-material-card-large metal-card-steel">
+                  <MetalWord
+                    word="STUDIO"
+                    className="metal-word-card"
+                    finish="steel"
+                    angle={0}
+                    extrusion={8}
+                    light={83}
+                    tracking={0}
+                  />
+                  <div className="metal-card-caption">
+                    <span>{m['metal.materials.steel']()}</span>
+                    <span>01</span>
+                  </div>
+                </article>
+                <article className="metal-material-card metal-card-copper">
+                  <MetalWord
+                    word="HEAT"
+                    className="metal-word-card metal-word-card-vertical"
+                    finish="copper"
+                    angle={38}
+                    extrusion={15}
+                    light={58}
+                    tracking={1}
+                  />
+                  <div className="metal-card-caption">
+                    <span>{m['metal.materials.copper']()}</span>
+                    <span>02</span>
+                  </div>
+                </article>
+                <article className="metal-material-card metal-card-black">
+                  <MetalWord
+                    word="NIGHT"
+                    className="metal-word-card"
+                    finish="black-chrome"
+                    angle={16}
+                    extrusion={12}
+                    light={50}
+                    tracking={-1}
+                  />
+                  <div className="metal-card-caption">
+                    <span>{m['metal.materials.black_chrome']()}</span>
+                    <span>03</span>
+                  </div>
+                </article>
+                <article className="metal-material-card metal-card-brushed">
+                  <MetalWord
+                    word="MOTION"
+                    className="metal-word-card"
+                    finish="brushed"
+                    angle={26}
+                    extrusion={10}
+                    light={76}
+                    tracking={2}
+                  />
+                  <div className="metal-card-caption">
+                    <span>{m['metal.materials.brushed']()}</span>
+                    <span>04</span>
+                  </div>
+                </article>
               </div>
-            </article>
-            <article className="metal-material-card metal-card-black">
-              <MetalWord
-                word="NIGHT"
-                className="metal-word-card"
-                finish="black-chrome"
-                angle={16}
-                extrusion={12}
-                light={50}
-                tracking={-1}
-              />
-              <div className="metal-card-caption">
-                <span>{m['metal.materials.black_chrome']()}</span>
-                <span>03</span>
-              </div>
-            </article>
-            <article className="metal-material-card metal-card-brushed">
-              <MetalWord
-                word="MOTION"
-                className="metal-word-card"
-                finish="brushed"
-                angle={26}
-                extrusion={10}
-                light={76}
-                tracking={2}
-              />
-              <div className="metal-card-caption">
-                <span>{m['metal.materials.brushed']()}</span>
-                <span>04</span>
-              </div>
-            </article>
-          </div>
-        </section>
+            </section>
 
-        <section className="metal-feature-section">
-          <div className="metal-feature-lead">
-            <p className="metal-kicker">{m['metal.features.kicker']()}</p>
-            <h2>{m['metal.features.title']()}</h2>
-          </div>
-          <div className="metal-feature-list">
-            <article>
-              <FileImage size={17} aria-hidden="true" />
-              <div>
-                <h3>{m['metal.features.f1.title']()}</h3>
-                <p>{m['metal.features.f1.description']()}</p>
+            <section className="metal-feature-section">
+              <div className="metal-feature-lead">
+                <p className="metal-kicker">{m['metal.features.kicker']()}</p>
+                <h2>{m['metal.features.title']()}</h2>
               </div>
-            </article>
-            <article>
-              <SlidersHorizontal size={17} aria-hidden="true" />
-              <div>
-                <h3>{m['metal.features.f2.title']()}</h3>
-                <p>{m['metal.features.f2.description']()}</p>
+              <div className="metal-feature-list">
+                <article>
+                  <FileImage size={17} aria-hidden="true" />
+                  <div>
+                    <h3>{m['metal.features.f1.title']()}</h3>
+                    <p>{m['metal.features.f1.description']()}</p>
+                  </div>
+                </article>
+                <article>
+                  <SlidersHorizontal size={17} aria-hidden="true" />
+                  <div>
+                    <h3>{m['metal.features.f2.title']()}</h3>
+                    <p>{m['metal.features.f2.description']()}</p>
+                  </div>
+                </article>
+                <article>
+                  <Sparkles size={17} aria-hidden="true" />
+                  <div>
+                    <h3>{m['metal.features.f3.title']()}</h3>
+                    <p>{m['metal.features.f3.description']()}</p>
+                  </div>
+                </article>
               </div>
-            </article>
-            <article>
-              <Sparkles size={17} aria-hidden="true" />
-              <div>
-                <h3>{m['metal.features.f3.title']()}</h3>
-                <p>{m['metal.features.f3.description']()}</p>
-              </div>
-            </article>
-          </div>
-        </section>
+            </section>
 
-        <SeoContent />
+            <SeoContent />
+          </>
+        ) : (
+          <HeavyContent />
+        )}
       </main>
 
-      <SiteFooter
-        brandName={m['metal.brand.name']()}
-        columns={[
-          {
-            title: m['metal.footer.product'](),
-            links: [
-              { label: m['metal.nav.studio'](), href: '/#workbench' },
-              { label: m['metal.nav.materials'](), href: '/#materials' },
-            ],
-          },
-          {
-            title: m['metal.footer.resources'](),
-            links: [
-              { label: m['metal.footer.sign_in'](), href: '/sign-in' },
-              { label: m['metal.footer.sign_up'](), href: '/sign-up' },
-            ],
-          },
-          {
-            title: m['metal.footer.legal'](),
-            links: [
-              { label: m['metal.footer.privacy'](), href: '/privacy-policy' },
-              { label: m['metal.footer.terms'](), href: '/terms-of-service' },
-            ],
-          },
-        ]}
-      />
+      <Footer />
     </div>
+  );
+}
+
+export function Footer() {
+  return (
+    <SiteFooter
+      brandName={m['metal.brand.name']()}
+      columns={[
+        {
+          title: m['metal.footer.product'](),
+          links: [
+            { label: 'metal font generator', href: '/' },
+            {
+              label: 'Heavy Metal Font Generator',
+              href: '/heavy-metal-font-generator',
+            },
+            { label: m['metal.nav.studio'](), href: '/#workbench' },
+            { label: m['metal.nav.materials'](), href: '/#materials' },
+          ],
+        },
+        {
+          title: m['metal.footer.resources'](),
+          links: [
+            { label: m['metal.footer.sign_in'](), href: '/sign-in' },
+            { label: m['metal.footer.sign_up'](), href: '/sign-up' },
+          ],
+        },
+        {
+          title: m['metal.footer.legal'](),
+          links: [
+            { label: m['metal.footer.privacy'](), href: '/privacy-policy' },
+            { label: m['metal.footer.terms'](), href: '/terms-of-service' },
+          ],
+        },
+      ]}
+    />
   );
 }

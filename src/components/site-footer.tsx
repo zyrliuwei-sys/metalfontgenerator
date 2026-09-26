@@ -89,7 +89,7 @@ export function SiteFooter({
         <div className="mt-8 flex w-full flex-col items-end justify-between gap-6 sm:flex-row">
           <span className="text-right text-sm text-neutral-400">
             {copyright ||
-              `© ${year} ${envConfigs.app_name}. All rights reserved.`}
+              `© ${year} ${resolvedBrandName}. All rights reserved.`}
           </span>
           {socials && socials.length > 0 && (
             <div className="flex items-center gap-5">

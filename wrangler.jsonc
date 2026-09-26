@@ -16,7 +16,7 @@
     // Server-side runtime fallbacks for the build-time VITE_* values — keep in
     // sync with .env.production (better-auth trustedOrigins, payment callbacks).
     "VITE_APP_URL": "https://metalfontgenerator.org",
-    "VITE_APP_NAME": "metalfontgeneratorai",
+    "VITE_APP_NAME": "metalfontgenerator",
   },
   "routes": [
     { "pattern": "metalfontgenerator.org", "custom_domain": true },

@@ -39,7 +39,7 @@ const getAnalyticsConfigs = createServerFn().handler(async () => {
   const { getAllConfigs } = await import('@/modules/config/service');
   const configs = await getAllConfigs();
   return {
-    gaId: configs.google_analytics_id?.trim() || '',
+    gaId: 'G-Y2YBXDEE7L',
     plausibleDomain: configs.plausible_domain?.trim() || '',
     plausibleSrc: configs.plausible_src?.trim() || '',
     adsenseCode: configs.adsense_code?.trim() || '',

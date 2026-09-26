@@ -12,9 +12,10 @@ const STATIC_PAGES: { path: string; title: string; description: string }[] = [
       'Generate dimensional 3D metal lettering with adjustable finishes and angles',
   },
   {
-    path: '/blog',
-    title: 'Blog',
-    description: 'Metal lettering ideas and guides',
+    path: '/heavy-metal-font-generator',
+    title: 'Heavy Metal Font Generator',
+    description:
+      'Band-name lettering presets, genre comparisons and transparent PNG exports',
   },
 ];
 
