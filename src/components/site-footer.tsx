@@ -3,6 +3,7 @@ import type { ComponentType, CSSProperties, SVGProps } from 'react';
 import { Link } from '@/core/i18n/navigation';
 import { envConfigs } from '@/config';
 import { cn } from '@/lib/utils';
+import { FooterBadgeList } from '@/components/footer-badge-list';
 
 export interface FooterColumn {
   title: string;
@@ -82,6 +83,8 @@ export function SiteFooter({
               ))}
             </nav>
           )}
+
+          <FooterBadgeList className="mt-8 justify-center" />
 
           <GridLineHorizontal className="mx-auto mt-8 max-w-7xl" />
         </div>

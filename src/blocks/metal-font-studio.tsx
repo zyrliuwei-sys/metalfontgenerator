@@ -9,22 +9,28 @@ import {
   ArrowDownRight,
   ArrowUpRight,
   Check,
+  ChevronDown,
   Download,
   FileImage,
+  LogOut,
   Menu,
   RotateCcw,
+  Settings,
+  Shield,
   SlidersHorizontal,
   Sparkles,
   Upload,
   X,
 } from 'lucide-react';
 
-import { signIn } from '@/core/auth/client';
+import { signIn, signOut, useSession } from '@/core/auth/client';
 import { Link } from '@/core/i18n/navigation';
 import { envConfigs } from '@/config';
 import { metalFaq } from '@/lib/metal-faq';
 import { exportMetalFont } from '@/lib/metal-font-export';
 import { m } from '@/paraglide/messages.js';
+import { localizeHref } from '@/paraglide/runtime.js';
+import { useUserPermissions } from '@/hooks/use-user-permissions';
 import { SiteFooter } from '@/components/site-footer';
 
 type Finish = 'steel' | 'copper' | 'black-chrome' | 'brushed';
@@ -243,7 +249,9 @@ function LoginPanel({ onClose }: { onClose: () => void }) {
         return;
       }
 
-      window.location.reload();
+      // The landing page login is a modal, so reloading would leave the user
+      // on the homepage and make a successful login look like a failure.
+      window.location.assign(localizeHref('/settings'));
     } catch (submitError: any) {
       setError(submitError?.message || m['metal.auth.error']());
     } finally {
@@ -335,9 +343,64 @@ function LoginPanel({ onClose }: { onClose: () => void }) {
   );
 }
 
+function HeaderAccount({
+  user,
+}: {
+  user: { name?: string | null; email: string; image?: string | null };
+}) {
+  const { data } = useUserPermissions();
+  const displayName = user.name || user.email;
+  const initial = displayName.trim().charAt(0).toUpperCase() || '?';
+
+  async function handleSignOut() {
+    await signOut();
+    window.location.assign(localizeHref('/'));
+  }
+
+  return (
+    <details className="metal-account">
+      <summary
+        className="metal-account-trigger"
+        aria-label={`${m['common.nav.profile']()}: ${user.email}`}
+      >
+        {user.image ? (
+          <img className="metal-account-avatar" src={user.image} alt="" />
+        ) : (
+          <span className="metal-account-avatar" aria-hidden="true">
+            {initial}
+          </span>
+        )}
+        <span className="metal-account-identity">
+          <strong>{displayName}</strong>
+          <span>{user.email}</span>
+        </span>
+        <ChevronDown size={15} aria-hidden="true" />
+      </summary>
+      <div className="metal-account-menu" role="menu">
+        <Link href="/settings" role="menuitem">
+          <Settings size={15} aria-hidden="true" />
+          {m['common.nav.settings']()}
+        </Link>
+        {data?.isAdmin ? (
+          <Link href="/admin" role="menuitem">
+            <Shield size={15} aria-hidden="true" />
+            {m['common.systems.admin']()}
+          </Link>
+        ) : null}
+        <button type="button" role="menuitem" onClick={handleSignOut}>
+          <LogOut size={15} aria-hidden="true" />
+          {m['common.sign.sign_out_title']()}
+        </button>
+      </div>
+    </details>
+  );
+}
+
 export function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [loginOpen, setLoginOpen] = useState(false);
+  const { data: session } = useSession();
+  const user = session?.user;
 
   const openLogin = () => {
     setMenuOpen(false);
@@ -357,14 +420,18 @@ export function Header() {
             </Link>
           </nav>
           <div className="metal-header-actions">
-            <button
-              type="button"
-              className="metal-header-cta"
-              onClick={openLogin}
-            >
-              {m['metal.nav.sign_in']()}
-              <ArrowUpRight size={14} aria-hidden="true" />
-            </button>
+            {user ? (
+              <HeaderAccount user={user} />
+            ) : (
+              <button
+                type="button"
+                className="metal-header-cta"
+                onClick={openLogin}
+              >
+                {m['metal.nav.sign_in']()}
+                <ArrowUpRight size={14} aria-hidden="true" />
+              </button>
+            )}
           </div>
           <button
             type="button"
@@ -390,9 +457,13 @@ export function Header() {
             <Link href="/#materials" onClick={() => setMenuOpen(false)}>
               {m['metal.nav.materials']()}
             </Link>
-            <button type="button" onClick={openLogin}>
-              {m['metal.nav.sign_in']()}
-            </button>
+            {user ? (
+              <HeaderAccount user={user} />
+            ) : (
+              <button type="button" onClick={openLogin}>
+                {m['metal.nav.sign_in']()}
+              </button>
+            )}
           </nav>
         ) : null}
       </header>
