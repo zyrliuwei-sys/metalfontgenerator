@@ -13,26 +13,34 @@ export function FooterBadgeList({ className }: { className?: string }) {
 
   if (badges.length === 0) return null;
 
+  const badgeLinks = (copy: 'original' | 'duplicate') =>
+    badges.map((badge, index) => (
+      <a
+        key={`${copy}:${badge.href}:${badge.src}:${index}`}
+        href={badge.href}
+        target="_blank"
+        rel="noopener noreferrer"
+        tabIndex={copy === 'duplicate' ? -1 : undefined}
+        className="footer-badge-link"
+      >
+        <img
+          src={badge.src}
+          alt={copy === 'duplicate' ? '' : badge.alt}
+          width={badge.width ?? 250}
+          height={badge.height}
+          loading="lazy"
+        />
+      </a>
+    ));
+
   return (
-    <div className={cn('flex flex-wrap items-center gap-4', className)}>
-      {badges.map((badge) => (
-        <a
-          key={`${badge.href}:${badge.src}`}
-          href={badge.href}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="inline-flex max-w-full transition-opacity hover:opacity-80"
-        >
-          <img
-            src={badge.src}
-            alt={badge.alt}
-            width={badge.width ?? 250}
-            height={badge.height}
-            loading="lazy"
-            className="h-auto max-w-full"
-          />
-        </a>
-      ))}
+    <div className={cn('footer-badge-marquee', className)}>
+      <div className="footer-badge-track">
+        <div className="footer-badge-group">{badgeLinks('original')}</div>
+        <div className="footer-badge-group" aria-hidden="true">
+          {badgeLinks('duplicate')}
+        </div>
+      </div>
     </div>
   );
 }

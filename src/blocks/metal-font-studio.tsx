@@ -120,37 +120,77 @@ function SeoContent() {
   const paragraph = (text: string) =>
     text.split('\n\n').map((copy) => <p key={copy}>{copy}</p>);
 
+  const chapters = [
+    {
+      title: m['metal.seo.what.title'](),
+      body: m['metal.seo.what.body'](),
+    },
+    {
+      title: m['metal.seo.use.title'](),
+      body: m['metal.seo.use.body'](),
+    },
+    {
+      title: m['metal.seo.materials.title'](),
+      body: m['metal.seo.materials.body'](),
+    },
+    {
+      title: m['metal.seo.workflow.title'](),
+      body: m['metal.seo.workflow.body'](),
+    },
+    {
+      title: m['metal.seo.creators.title'](),
+      body: m['metal.seo.creators.body'](),
+    },
+  ];
+
   return (
-    <section className="metal-seo-section" aria-labelledby="metal-seo-title">
-      <div className="metal-seo-lead">
-        <p className="metal-kicker">{m['metal.seo.kicker']()}</p>
-        <h2 id="metal-seo-title">{m['metal.seo.title']()}</h2>
+    <section
+      className="metal-seo-section metal-seo-section--home"
+      aria-labelledby="metal-seo-title"
+    >
+      <div className="metal-seo-intro">
+        <div className="metal-seo-lead">
+          <p className="metal-kicker">{m['metal.seo.kicker']()}</p>
+          <h2 id="metal-seo-title">{m['metal.seo.title']()}</h2>
+        </div>
+        <div className="metal-seo-intro-copy">
+          {paragraph(m['metal.seo.intro']())}
+        </div>
       </div>
-      <article className="metal-seo-copy">
-        {paragraph(m['metal.seo.intro']())}
-        <h3>{m['metal.seo.what.title']()}</h3>
-        {paragraph(m['metal.seo.what.body']())}
-        <h3>{m['metal.seo.use.title']()}</h3>
-        {paragraph(m['metal.seo.use.body']())}
-        <h3>{m['metal.seo.materials.title']()}</h3>
-        {paragraph(m['metal.seo.materials.body']())}
-        <h3>{m['metal.seo.workflow.title']()}</h3>
-        {paragraph(m['metal.seo.workflow.body']())}
-        <h3>{m['metal.seo.creators.title']()}</h3>
-        {paragraph(m['metal.seo.creators.body']())}
-        <h2>{m['metal.seo.copy.title']()}</h2>
-        {paragraph(m['metal.seo.copy.body']())}
-        <h2>{m['metal.seo.free.title']()}</h2>
-        {paragraph(m['metal.seo.free.body']())}
-        <p>
-          <Link href="/heavy-metal-font-generator">
-            Heavy Metal Font Generator
-          </Link>{' '}
-          — {m['metal.seo.heavy_link']()}
-        </p>
+
+      <div className="metal-seo-chapters">
+        {chapters.map((chapter, index) => (
+          <article className="metal-seo-chapter" key={chapter.title}>
+            <span className="metal-seo-chapter-number" aria-hidden="true">
+              {String(index + 1).padStart(2, '0')}
+            </span>
+            <h3>{chapter.title}</h3>
+            {paragraph(chapter.body)}
+          </article>
+        ))}
+      </div>
+
+      <div className="metal-seo-resources">
+        <article className="metal-seo-resource">
+          <h2>{m['metal.seo.copy.title']()}</h2>
+          {paragraph(m['metal.seo.copy.body']())}
+        </article>
+        <article className="metal-seo-resource metal-seo-resource--accent">
+          <h2>{m['metal.seo.free.title']()}</h2>
+          {paragraph(m['metal.seo.free.body']())}
+          <p className="metal-seo-related">
+            <Link href="/heavy-metal-font-generator">
+              Heavy Metal Font Generator
+            </Link>{' '}
+            — {m['metal.seo.heavy_link']()}
+          </p>
+        </article>
+      </div>
+
+      <div className="metal-seo-faq-section">
         <h3>{m['metal.seo.faq.title']()}</h3>
         <Faq kind="home" />
-      </article>
+      </div>
     </section>
   );
 }
@@ -512,6 +552,7 @@ function RangeControl({
 
 export function MetalFontStudio({ heavy = false }: { heavy?: boolean }) {
   const [word, setWord] = useState(heavy ? 'THUNDER' : 'FORGE');
+  const [heroFinish, setHeroFinish] = useState<Finish>('steel');
   const [finish, setFinish] = useState<Finish>('steel');
   const [orbit, setOrbit] = useState<Orbit>(heavy ? 'front' : 'three-quarter');
   const [angle, setAngle] = useState(heavy ? 0 : 22);
@@ -541,6 +582,16 @@ export function MetalFontStudio({ heavy = false }: { heavy?: boolean }) {
   const generate = () => {
     setStatus('generating');
     window.setTimeout(() => setStatus('ready'), 820);
+  };
+
+  const selectMaterial = (selectedFinish: Finish) => {
+    setFinish(selectedFinish);
+    setStatus('idle');
+    document.getElementById('workbench')?.scrollIntoView({
+      behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches
+        ? 'auto'
+        : 'smooth',
+    });
   };
 
   const download = async () => {
@@ -599,42 +650,52 @@ export function MetalFontStudio({ heavy = false }: { heavy?: boolean }) {
                 <ArrowDownRight size={16} aria-hidden="true" />
               </a>
             </div>
-            <div
-              className="metal-hero-specs"
-              aria-label={m['metal.hero.specs_label']()}
-            >
-              <div>
-                <span>{m['metal.hero.spec.material']()}</span>
-                <strong>{m['metal.hero.spec.material_value']()}</strong>
-              </div>
-              <div>
-                <span>{m['metal.hero.spec.angle']()}</span>
-                <strong>{heavy ? '0°' : '22°'}</strong>
-              </div>
-              <div>
-                <span>{m['metal.hero.spec.depth']()}</span>
-                <strong>{heavy ? '22px' : '14px'}</strong>
-              </div>
-            </div>
           </div>
           <div
             className="metal-hero-preview"
-            aria-label={m['metal.hero.preview_alt']()}
+            aria-label={`${m['metal.hero.preview_label']()}: ${heavy ? 'THUNDER' : 'FORM'}, ${FINISHES.find((item) => item.id === heroFinish)?.label()}`}
           >
             <div className="metal-preview-grid" aria-hidden="true" />
-            <div className="metal-orbit-label">
+            <div className="metal-hero-preview-head">
               <span>{m['metal.hero.preview_label']()}</span>
               <span>{heavy ? '0° / 22px' : '22° / 14px'}</span>
             </div>
-            <MetalWord
-              word={heavy ? 'THUNDER' : 'FORM'}
-              className="metal-word-hero"
-              finish="steel"
-              angle={heavy ? 0 : 22}
-              extrusion={heavy ? 22 : 14}
-              light={heavy ? 85 : 72}
-              tracking={heavy ? -1 : 0}
-            />
+            <div className="metal-hero-specimen">
+              <MetalWord
+                word={heavy ? 'THUNDER' : 'FORM'}
+                className="metal-word-hero"
+                finish={heroFinish}
+                angle={heavy ? 0 : 22}
+                extrusion={heavy ? 22 : 14}
+                light={heavy ? 85 : 72}
+                tracking={heavy ? -1 : 0}
+              />
+            </div>
+            <div className="metal-hero-preview-foot">
+              <span>{m['metal.hero.spec.material']()}</span>
+              <div
+                className="metal-hero-finishes"
+                role="group"
+                aria-label={m['metal.studio.finish_label']()}
+              >
+                {FINISHES.map((item) => (
+                  <button
+                    key={item.id}
+                    type="button"
+                    className={heroFinish === item.id ? 'is-active' : ''}
+                    onClick={() => setHeroFinish(item.id)}
+                    aria-label={item.label()}
+                    aria-pressed={heroFinish === item.id}
+                    title={item.label()}
+                  >
+                    <span className={item.swatch} aria-hidden="true" />
+                  </button>
+                ))}
+              </div>
+              <strong>
+                {FINISHES.find((item) => item.id === heroFinish)?.label()}
+              </strong>
+            </div>
           </div>
         </section>
 
@@ -964,13 +1025,16 @@ export function MetalFontStudio({ heavy = false }: { heavy?: boolean }) {
                   </p>
                   <h2>{m['metal.materials.title']()}</h2>
                 </div>
-                <Link href="/#workbench" className="metal-text-link">
-                  {m['metal.materials.link']()}
-                  <ArrowUpRight size={15} aria-hidden="true" />
-                </Link>
+                <p className="metal-materials-intro">
+                  {m['metal.materials.description']()}
+                </p>
               </div>
               <div className="metal-material-grid">
-                <article className="metal-material-card metal-material-card-large metal-card-steel">
+                <button
+                  type="button"
+                  className="metal-material-card metal-material-card-large metal-card-steel"
+                  onClick={() => selectMaterial('steel')}
+                >
                   <MetalWord
                     word="STUDIO"
                     className="metal-word-card"
@@ -981,11 +1045,18 @@ export function MetalFontStudio({ heavy = false }: { heavy?: boolean }) {
                     tracking={0}
                   />
                   <div className="metal-card-caption">
-                    <span>{m['metal.materials.steel']()}</span>
-                    <span>01</span>
+                    <span>
+                      <strong>{m['metal.materials.steel']()}</strong>
+                      <small>{m['metal.materials.steel_desc']()}</small>
+                    </span>
+                    <ArrowUpRight size={20} aria-hidden="true" />
                   </div>
-                </article>
-                <article className="metal-material-card metal-card-copper">
+                </button>
+                <button
+                  type="button"
+                  className="metal-material-card metal-card-copper"
+                  onClick={() => selectMaterial('copper')}
+                >
                   <MetalWord
                     word="HEAT"
                     className="metal-word-card metal-word-card-vertical"
@@ -996,11 +1067,18 @@ export function MetalFontStudio({ heavy = false }: { heavy?: boolean }) {
                     tracking={1}
                   />
                   <div className="metal-card-caption">
-                    <span>{m['metal.materials.copper']()}</span>
-                    <span>02</span>
+                    <span>
+                      <strong>{m['metal.materials.copper']()}</strong>
+                      <small>{m['metal.materials.copper_desc']()}</small>
+                    </span>
+                    <ArrowUpRight size={20} aria-hidden="true" />
                   </div>
-                </article>
-                <article className="metal-material-card metal-card-black">
+                </button>
+                <button
+                  type="button"
+                  className="metal-material-card metal-card-black"
+                  onClick={() => selectMaterial('black-chrome')}
+                >
                   <MetalWord
                     word="NIGHT"
                     className="metal-word-card"
@@ -1011,11 +1089,18 @@ export function MetalFontStudio({ heavy = false }: { heavy?: boolean }) {
                     tracking={-1}
                   />
                   <div className="metal-card-caption">
-                    <span>{m['metal.materials.black_chrome']()}</span>
-                    <span>03</span>
+                    <span>
+                      <strong>{m['metal.materials.black_chrome']()}</strong>
+                      <small>{m['metal.materials.black_desc']()}</small>
+                    </span>
+                    <ArrowUpRight size={20} aria-hidden="true" />
                   </div>
-                </article>
-                <article className="metal-material-card metal-card-brushed">
+                </button>
+                <button
+                  type="button"
+                  className="metal-material-card metal-card-brushed"
+                  onClick={() => selectMaterial('brushed')}
+                >
                   <MetalWord
                     word="MOTION"
                     className="metal-word-card"
@@ -1026,10 +1111,13 @@ export function MetalFontStudio({ heavy = false }: { heavy?: boolean }) {
                     tracking={2}
                   />
                   <div className="metal-card-caption">
-                    <span>{m['metal.materials.brushed']()}</span>
-                    <span>04</span>
+                    <span>
+                      <strong>{m['metal.materials.brushed']()}</strong>
+                      <small>{m['metal.materials.brushed_desc']()}</small>
+                    </span>
+                    <ArrowUpRight size={20} aria-hidden="true" />
                   </div>
-                </article>
+                </button>
               </div>
             </section>
 

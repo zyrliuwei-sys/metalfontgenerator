@@ -84,7 +84,7 @@ export function SiteFooter({
             </nav>
           )}
 
-          <FooterBadgeList className="mt-8 justify-center" />
+          <FooterBadgeList className="mt-8 w-full" />
 
           <GridLineHorizontal className="mx-auto mt-8 max-w-7xl" />
         </div>
