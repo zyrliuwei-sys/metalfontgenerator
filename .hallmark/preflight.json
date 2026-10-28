@@ -1,0 +1,29 @@
+{
+  "date": "2026-10-28",
+  "scope": "/y2k-font-maker",
+  "framework": "TanStack Start, React 19, Tailwind 4",
+  "fontSources": ["src/routes/__root.tsx", "tokens.css"],
+  "fontRoles": {
+    "display": "Space Grotesk",
+    "body": "IBM Plex Sans Variable",
+    "colophon": "IBM Plex Mono",
+    "artwork": "Original Vector 2000 paths; optional IBM Plex Sans Classic"
+  },
+  "paletteSource": "tokens.css",
+  "palette": "Existing dark studio identity with scoped mint, chrome and control-surface tokens",
+  "motion": "Existing motion dependency; no new runtime dependency added",
+  "spacing": "Existing 4-point token scale",
+  "preserved": [
+    "routes",
+    "brand",
+    "authentication",
+    "SEO content intent",
+    "transparent PNG export"
+  ],
+  "introduced": [
+    "original vector alphabet",
+    "pointer and keyboard light controls",
+    "responsive horizontal control dock",
+    "editorial gallery and guide index"
+  ]
+}

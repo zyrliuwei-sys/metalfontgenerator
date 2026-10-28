@@ -458,6 +458,7 @@ export function Header() {
             <Link href="/heavy-metal-font-generator">
               Heavy Metal Font Generator
             </Link>
+            <Link href="/y2k-font-maker">{m['y2k.name']()}</Link>
           </nav>
           <div className="metal-header-actions">
             {user ? (
@@ -490,6 +491,9 @@ export function Header() {
               onClick={() => setMenuOpen(false)}
             >
               Heavy Metal Font Generator
+            </Link>
+            <Link href="/y2k-font-maker" onClick={() => setMenuOpen(false)}>
+              {m['y2k.name']()}
             </Link>
             <Link href="/#workbench" onClick={() => setMenuOpen(false)}>
               {m['metal.nav.studio']()}
@@ -1176,6 +1180,7 @@ export function Footer() {
               label: 'Heavy Metal Font Generator',
               href: '/heavy-metal-font-generator',
             },
+            { label: m['y2k.name'](), href: '/y2k-font-maker' },
             { label: m['metal.nav.studio'](), href: '/#workbench' },
             { label: m['metal.nav.materials'](), href: '/#materials' },
           ],

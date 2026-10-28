@@ -7,6 +7,7 @@ import { getLocalPosts, mergePosts } from '@/content/posts';
 export const STATIC_PATHS = [
   '',
   '/heavy-metal-font-generator',
+  '/y2k-font-maker',
   '/privacy-policy',
   '/terms-of-service',
 ];

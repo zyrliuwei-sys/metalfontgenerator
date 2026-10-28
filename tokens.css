@@ -64,3 +64,53 @@
     --dur-slow: 150ms;
   }
 }
+
+/* Y2K Type Specimen · scoped so the original studio retains its own identity. */
+.y2k-page {
+  --color-y2k-paper: oklch(16.5% 0.009 240);
+  --color-y2k-surface: oklch(20% 0.012 240);
+  --color-y2k-raised: oklch(24% 0.013 240);
+  --color-y2k-ink: oklch(94% 0.008 180);
+  --color-y2k-muted: oklch(72% 0.012 220);
+  --color-y2k-rule: oklch(34% 0.012 240);
+  --color-y2k-rule-soft: oklch(26% 0.012 240);
+  --color-y2k-accent: oklch(88% 0.1 160);
+  --color-y2k-accent-ink: oklch(21% 0.025 160);
+  --color-y2k-control: oklch(93% 0.012 130);
+  --color-y2k-control-ink: oklch(20% 0.012 220);
+  --color-y2k-control-muted: oklch(44% 0.018 220);
+  --color-y2k-control-rule: oklch(72% 0.015 150);
+  --color-y2k-control-hover: oklch(88% 0.025 145);
+  --color-y2k-stage: oklch(19% 0.017 250);
+  --color-y2k-stage-middle: oklch(25% 0.022 250);
+  --color-y2k-stage-light: oklch(91% 0.015 230);
+  --color-y2k-stage-light-ink: oklch(35% 0.03 240);
+  --color-y2k-checker: oklch(28% 0.015 240);
+  --color-y2k-ice: oklch(21% 0.035 250);
+  --color-y2k-ice-line: oklch(32% 0.05 250);
+  --color-y2k-pink-paper: oklch(86% 0.033 350);
+  --color-y2k-pink-ink: oklch(25% 0.04 340);
+  --color-y2k-pink-muted: oklch(40% 0.04 340);
+  --color-y2k-pink-line: oklch(73% 0.045 350);
+  --color-y2k-swatch-silver: oklch(61% 0.04 245);
+  --color-y2k-swatch-ice: oklch(60% 0.12 245);
+  --color-y2k-swatch-pink: oklch(60% 0.14 340);
+  --color-y2k-metal-highlight: oklch(97% 0.01 220);
+  --color-y2k-metal-dark: oklch(29% 0.025 245);
+  --color-y2k-metal-mid: oklch(65% 0.02 240);
+  --color-y2k-error: oklch(80% 0.13 40);
+  --font-y2k-display: var(--font-display);
+  --font-y2k-body: var(--font-metal-body);
+  --font-y2k-code: var(--font-metal-mono);
+  --text-y2k-label: 0.75rem;
+  --text-y2k-small: 0.875rem;
+  --text-y2k-body: 1rem;
+  --text-y2k-lead: 1.25rem;
+  --text-y2k-title: clamp(2rem, 4vw, 3.5rem);
+  --text-y2k-display: clamp(2.65rem, 5.9vw, 5.25rem);
+  --space-y2k-gutter: clamp(1rem, 4vw, 4rem);
+  --space-y2k-section: clamp(3.5rem, 7vw, 7rem);
+  --radius-y2k: 2px;
+  --z-y2k-raised: 2;
+  --z-y2k-sticky: 40;
+}
