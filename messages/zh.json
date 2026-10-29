@@ -1352,8 +1352,6 @@
   "metal.pricing.price_note": "按当前 EvoLink 2K 成本 × 8 计算",
   "metal.pricing.creator": "创作者",
   "metal.pricing.creator_desc": "适合测试文字、封面和小批量变体。",
-  "metal.pricing.studio": "工作室",
-  "metal.pricing.studio_desc": "适合持续生成和客户交付版本。",
   "metal.pricing.credits": "{count} 积分",
   "metal.pricing.generations": "约 {count} 次 2K 生成",
   "metal.pricing.includes": "Nano Banana 2.1 · 2K 输出",

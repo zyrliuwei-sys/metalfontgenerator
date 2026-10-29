@@ -31,7 +31,7 @@ export type PricingProduct = {
 };
 
 export type MetalFontPricingBilling = 'one_time' | 'monthly';
-export type MetalFontPricingTier = 'creator' | 'studio';
+export type MetalFontPricingTier = 'creator';
 
 export type MetalFontPricingOption = PricingProduct & {
   tier: MetalFontPricingTier;
@@ -51,7 +51,7 @@ function metalFontOption(params: {
   generations: number;
   popular?: boolean;
 }): MetalFontPricingOption {
-  const productName = params.tier === 'creator' ? 'Creator' : 'Studio';
+  const productName = 'Creator';
   const monthly = params.billing === 'monthly';
   return {
     productId: params.productId,
@@ -139,60 +139,6 @@ export const metalFontPricingOptions: MetalFontPricingOption[] = [
     priceInCents: 4999,
     credits: 3000,
     generations: 120,
-  }),
-
-  // Studio — one-time
-  metalFontOption({
-    productId: 'metal_studio_one_time_1500',
-    tier: 'studio',
-    billing: 'one_time',
-    priceInCents: 3999,
-    credits: 1500,
-    generations: 60,
-  }),
-  metalFontOption({
-    productId: 'metal_studio_one_time_4000',
-    tier: 'studio',
-    billing: 'one_time',
-    priceInCents: 8999,
-    credits: 4000,
-    generations: 160,
-    popular: true,
-  }),
-  metalFontOption({
-    productId: 'metal_studio_one_time_10000',
-    tier: 'studio',
-    billing: 'one_time',
-    priceInCents: 19999,
-    credits: 10000,
-    generations: 400,
-  }),
-
-  // Studio — monthly
-  metalFontOption({
-    productId: 'metal_studio_monthly_5000',
-    tier: 'studio',
-    billing: 'monthly',
-    priceInCents: 6999,
-    credits: 5000,
-    generations: 200,
-  }),
-  metalFontOption({
-    productId: 'metal_studio_monthly_12000',
-    tier: 'studio',
-    billing: 'monthly',
-    priceInCents: 13999,
-    credits: 12000,
-    generations: 480,
-    popular: true,
-  }),
-  metalFontOption({
-    productId: 'metal_studio_monthly_30000',
-    tier: 'studio',
-    billing: 'monthly',
-    priceInCents: 29999,
-    credits: 30000,
-    generations: 1200,
   }),
 ];
 

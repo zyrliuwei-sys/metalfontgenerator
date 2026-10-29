@@ -13,7 +13,7 @@ import { apiPost } from '@/lib/api-client';
 import { m } from '@/paraglide/messages.js';
 import { localizeHref } from '@/paraglide/runtime.js';
 
-const TIERS: MetalFontPricingTier[] = ['creator', 'studio'];
+const TIERS: MetalFontPricingTier[] = ['creator'];
 
 function formatPrice(priceInCents: number): string {
   return new Intl.NumberFormat(undefined, {
@@ -98,22 +98,14 @@ export function MetalFontPricing() {
       <div className="metal-pricing-tier-grid">
         {TIERS.map((tier) => {
           const options = visibleOptions(tier);
-          const title =
-            tier === 'creator'
-              ? m['metal.pricing.creator']()
-              : m['metal.pricing.studio']();
-          const description =
-            tier === 'creator'
-              ? m['metal.pricing.creator_desc']()
-              : m['metal.pricing.studio_desc']();
+          const title = m['metal.pricing.creator']();
+          const description = m['metal.pricing.creator_desc']();
 
           return (
             <article className="metal-pricing-tier" key={tier}>
               <div className="metal-pricing-tier-heading">
                 <div>
-                  <span className="metal-pricing-tier-index">
-                    {tier === 'creator' ? '01' : '02'}
-                  </span>
+                  <span className="metal-pricing-tier-index">01</span>
                   <h3>{title}</h3>
                 </div>
                 <p>{description}</p>

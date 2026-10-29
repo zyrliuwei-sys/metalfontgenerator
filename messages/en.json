@@ -1352,8 +1352,6 @@
   "metal.pricing.price_note": "Current EvoLink 2K usage × 8",
   "metal.pricing.creator": "Creator",
   "metal.pricing.creator_desc": "For testing words, covers and small batches.",
-  "metal.pricing.studio": "Studio",
-  "metal.pricing.studio_desc": "For repeated generation and client-ready variants.",
   "metal.pricing.credits": "{count} credits",
   "metal.pricing.generations": "≈ {count} 2K generations",
   "metal.pricing.includes": "Nano Banana 2.1 · 2K output",
