@@ -31,7 +31,7 @@ const dbCredentials =
 
 export default defineConfig({
   schema: './src/config/db/schema.ts',
-  out: './drizzle',
+  out: provider === 'd1' ? './migrations/d1' : './drizzle',
   dialect,
   dbCredentials,
 });

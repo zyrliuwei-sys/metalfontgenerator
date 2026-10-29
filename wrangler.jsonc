@@ -12,21 +12,21 @@
     "enabled": true,
   },
   "vars": {
-    "DATABASE_PROVIDER": "postgresql",
+    "DATABASE_PROVIDER": "d1",
     // Server-side runtime fallbacks for the build-time VITE_* values — keep in
     // sync with .env.production (better-auth trustedOrigins, payment callbacks).
     "VITE_APP_URL": "https://metalfontgenerator.org",
     "VITE_APP_NAME": "metalfontgenerator",
   },
-  "routes": [
-    { "pattern": "metalfontgenerator.org", "custom_domain": true },
-  ],
-  // ── Postgres via Hyperdrive (instead of D1) ────────────────────────────────
-  // Created by /deploy-cloudflare from the Neon direct connection string.
-  // The build keeps the postgres driver in the bundle when
-  // DATABASE_PROVIDER=postgresql — see vite.config.ts.
-  "hyperdrive": [
-    { "binding": "HYPERDRIVE", "id": "f1ab0ea7da274e7da869b3e2ba4a68b2" },
+  "routes": [{ "pattern": "metalfontgenerator.org", "custom_domain": true }],
+  // Dedicated database, migrated from this project's Neon database.
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "metalfontgenerator-production",
+      "database_id": "2d9b03ce-ee7d-4384-8581-7b23b13c8b04",
+      "migrations_dir": "migrations/d1",
+    },
   ],
   //
   // Other optional bindings — uncomment when needed:

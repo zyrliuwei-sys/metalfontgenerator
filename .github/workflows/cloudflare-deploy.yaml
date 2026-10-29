@@ -7,8 +7,9 @@
 #
 # Deploys CODE only. Database schema changes (src/config/db/schema.ts +
 # the schema.*.ts templates) still need a reviewed local migration BEFORE
-# pushing: `pnpm db:generate` → review the SQL in /drizzle → `pnpm db:migrate`
-# against the production DATABASE_URL. CI never touches the database.
+# pushing: generate/review SQL in migrations/d1, then apply with
+# `pnpm exec wrangler d1 migrations apply metalfontgenerator-production --remote`.
+# CI never touches the database.
 name: Deploy to Cloudflare Workers
 
 on:
@@ -26,7 +27,7 @@ jobs:
     timeout-minutes: 15
     env:
       CLOUDFLARE_ACCOUNT_ID: d7c3d8fa2229ed65b03fd28fc8659989
-      DATABASE_PROVIDER: postgresql # postinstall copies the postgres schema template
+      DATABASE_PROVIDER: d1 # postinstall copies the SQLite schema used by D1
       VITE_APP_URL: https://metalfontgenerator.org
       VITE_APP_NAME: metalfontgeneratorai
       HUSKY: '0' # skip git hooks in CI
