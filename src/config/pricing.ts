@@ -30,10 +30,180 @@ export type PricingProduct = {
   plan?: PricingPlanInfo;
 };
 
+export type MetalFontPricingBilling = 'one_time' | 'monthly';
+export type MetalFontPricingTier = 'creator' | 'studio';
+
+export type MetalFontPricingOption = PricingProduct & {
+  tier: MetalFontPricingTier;
+  billing: MetalFontPricingBilling;
+  generations: number;
+  popular?: boolean;
+};
+
+export const METAL_FONT_GENERATION_CREDITS = 25;
+
+function metalFontOption(params: {
+  productId: string;
+  tier: MetalFontPricingTier;
+  billing: MetalFontPricingBilling;
+  priceInCents: number;
+  credits: number;
+  generations: number;
+  popular?: boolean;
+}): MetalFontPricingOption {
+  const productName = params.tier === 'creator' ? 'Creator' : 'Studio';
+  const monthly = params.billing === 'monthly';
+  return {
+    productId: params.productId,
+    productName,
+    planName: productName,
+    description: monthly
+      ? `Metal Font ${productName} monthly credits`
+      : `Metal Font ${productName} one-time credits`,
+    type: monthly ? PaymentType.SUBSCRIPTION : PaymentType.ONE_TIME,
+    priceInCents: params.priceInCents,
+    currency: 'usd',
+    credits: params.credits,
+    creditsValidDays: monthly ? 31 : undefined,
+    plan: monthly
+      ? {
+          name: `Metal Font ${productName}`,
+          interval: PaymentInterval.MONTH,
+          intervalCount: 1,
+        }
+      : undefined,
+    tier: params.tier,
+    billing: params.billing,
+    generations: params.generations,
+    popular: params.popular,
+  };
+}
+
 /**
- * Room-design catalog. Credits follow EvoLink's current credit unit with the
- * customer-facing 7x multiplier defined in design-pricing.ts.
- * Keys MUST match what the pricing UI sends as product_id.
+ * First version of the metal-font credit catalog.
+ *
+ * A 2K Nano Banana 2.1 generation currently costs about 3.0845 EvoLink
+ * credits. The metal-font API charges 8x, so one 2K generation consumes 25
+ * app credits. Product prices below sell app credits, not provider credits.
+ */
+export const metalFontPricingOptions: MetalFontPricingOption[] = [
+  // Creator — one-time
+  metalFontOption({
+    productId: 'metal_creator_one_time_100',
+    tier: 'creator',
+    billing: 'one_time',
+    priceInCents: 499,
+    credits: 100,
+    generations: 4,
+  }),
+  metalFontOption({
+    productId: 'metal_creator_one_time_300',
+    tier: 'creator',
+    billing: 'one_time',
+    priceInCents: 1299,
+    credits: 300,
+    generations: 12,
+    popular: true,
+  }),
+  metalFontOption({
+    productId: 'metal_creator_one_time_800',
+    tier: 'creator',
+    billing: 'one_time',
+    priceInCents: 2999,
+    credits: 800,
+    generations: 32,
+  }),
+
+  // Creator — monthly
+  metalFontOption({
+    productId: 'metal_creator_monthly_300',
+    tier: 'creator',
+    billing: 'monthly',
+    priceInCents: 699,
+    credits: 300,
+    generations: 12,
+  }),
+  metalFontOption({
+    productId: 'metal_creator_monthly_1000',
+    tier: 'creator',
+    billing: 'monthly',
+    priceInCents: 1999,
+    credits: 1000,
+    generations: 40,
+    popular: true,
+  }),
+  metalFontOption({
+    productId: 'metal_creator_monthly_3000',
+    tier: 'creator',
+    billing: 'monthly',
+    priceInCents: 4999,
+    credits: 3000,
+    generations: 120,
+  }),
+
+  // Studio — one-time
+  metalFontOption({
+    productId: 'metal_studio_one_time_1500',
+    tier: 'studio',
+    billing: 'one_time',
+    priceInCents: 3999,
+    credits: 1500,
+    generations: 60,
+  }),
+  metalFontOption({
+    productId: 'metal_studio_one_time_4000',
+    tier: 'studio',
+    billing: 'one_time',
+    priceInCents: 8999,
+    credits: 4000,
+    generations: 160,
+    popular: true,
+  }),
+  metalFontOption({
+    productId: 'metal_studio_one_time_10000',
+    tier: 'studio',
+    billing: 'one_time',
+    priceInCents: 19999,
+    credits: 10000,
+    generations: 400,
+  }),
+
+  // Studio — monthly
+  metalFontOption({
+    productId: 'metal_studio_monthly_5000',
+    tier: 'studio',
+    billing: 'monthly',
+    priceInCents: 6999,
+    credits: 5000,
+    generations: 200,
+  }),
+  metalFontOption({
+    productId: 'metal_studio_monthly_12000',
+    tier: 'studio',
+    billing: 'monthly',
+    priceInCents: 13999,
+    credits: 12000,
+    generations: 480,
+    popular: true,
+  }),
+  metalFontOption({
+    productId: 'metal_studio_monthly_30000',
+    tier: 'studio',
+    billing: 'monthly',
+    priceInCents: 29999,
+    credits: 30000,
+    generations: 1200,
+  }),
+];
+
+const metalFontPricingCatalog = Object.fromEntries(
+  metalFontPricingOptions.map((product) => [product.productId, product])
+) as Record<string, PricingProduct>;
+
+/**
+ * Existing room-design catalog. Keys MUST match what the pricing UI sends as
+ * product_id. The metal-font catalog is appended below with its own 8x
+ * provider-credit multiplier and product set.
  */
 export const pricingCatalog: Record<string, PricingProduct> = {
   hobby_one_time: {
@@ -150,6 +320,7 @@ export const pricingCatalog: Record<string, PricingProduct> = {
       intervalCount: 1,
     },
   },
+  ...metalFontPricingCatalog,
 };
 
 export function getPricingProduct(productId: string): PricingProduct | null {

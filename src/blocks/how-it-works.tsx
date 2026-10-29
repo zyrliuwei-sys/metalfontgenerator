@@ -42,7 +42,7 @@ export function HowItWorks() {
 
         <div className="grid gap-10 md:grid-cols-3">
           {STEPS.map((step, i) => (
-            <div key={step.title} className="text-center md:text-left">
+            <div key={step.title()} className="text-center md:text-left">
               <div className="overflow-hidden rounded-3xl shadow-lg">
                 <img
                   src={step.img}

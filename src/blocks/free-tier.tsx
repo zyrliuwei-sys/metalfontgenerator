@@ -31,7 +31,7 @@ export function FreeTier() {
 
         <ul className="space-y-4">
           {BULLETS.map((bullet) => (
-            <li key={bullet} className="flex items-start gap-3">
+            <li key={bullet()} className="flex items-start gap-3">
               <Check className="text-primary mt-1 size-5 shrink-0" />
               <span className="text-lg leading-relaxed">{bullet()}</span>
             </li>

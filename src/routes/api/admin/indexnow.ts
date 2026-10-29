@@ -48,12 +48,7 @@ async function generatedSiteUrls(origin: string) {
   }
 
   return Array.from(
-    new Set(
-      paths.flatMap((path) => [
-        new URL(path || '/', origin).href,
-        new URL(path ? `/zh${path}` : '/zh', origin).href,
-      ])
-    )
+    new Set(paths.map((path) => new URL(path || '/', origin).href))
   );
 }
 

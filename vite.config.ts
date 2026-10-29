@@ -74,43 +74,9 @@ export default defineConfig({
       outdir: './src/paraglide',
       outputStructure: 'message-modules',
       cookieName: 'PARAGLIDE_LOCALE',
-      strategy: ['url', 'cookie', 'baseLocale'],
-      urlPatterns: [
-        // API endpoints are never locale-prefixed.
-        {
-          pattern: '/api/:path(.*)?',
-          localized: [
-            ['en', '/api/:path(.*)?'],
-            ['zh', '/api/:path(.*)?'],
-          ],
-        },
-        // Keep the bathroom spoke on an explicit localized route. This is
-        // intentionally ahead of the catch-all so it cannot fall back to the
-        // English URL during SSR.
-        {
-          pattern: '/ai-bathroom-design',
-          localized: [
-            ['zh', '/zh/ai-bathroom-design'],
-            ['en', '/ai-bathroom-design'],
-          ],
-        },
-        // Bare locale homes match without a trailing-slash redirect.
-        {
-          pattern: '/',
-          localized: [
-            ['zh', '/zh'],
-            ['en', '/'],
-          ],
-        },
-        // "as-needed" prefix: zh under /zh, en (default) unprefixed.
-        {
-          pattern: '/:path(.*)?',
-          localized: [
-            ['zh', '/zh/:path(.*)?'],
-            ['en', '/:path(.*)?'],
-          ],
-        },
-      ],
+      // The public site is English-only. Ignore previously saved locale
+      // cookies; legacy /zh links are redirected in the server entry.
+      strategy: ['baseLocale'],
     }),
     tanstackStart({
       srcDirectory: 'src',

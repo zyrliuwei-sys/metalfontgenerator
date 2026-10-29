@@ -15,8 +15,6 @@ export function socialMeta(params: {
   image?: string;
 }): { property?: string; name?: string; content: string }[] {
   const image = `${envConfigs.app_url}${params.image ?? OG_IMAGE}`;
-  const ogLocale = params.locale === 'zh' ? 'zh_CN' : 'en_US';
-  const ogAlt = params.locale === 'zh' ? 'en_US' : 'zh_CN';
   return [
     { property: 'og:title', content: params.title },
     { property: 'og:description', content: params.description },
@@ -27,8 +25,7 @@ export function socialMeta(params: {
     { property: 'og:image:height', content: '630' },
     { property: 'og:image:alt', content: params.title },
     { property: 'og:site_name', content: envConfigs.app_name },
-    { property: 'og:locale', content: ogLocale },
-    { property: 'og:locale:alternate', content: ogAlt },
+    { property: 'og:locale', content: 'en_US' },
     { name: 'twitter:card', content: 'summary_large_image' },
     { name: 'twitter:title', content: params.title },
     { name: 'twitter:description', content: params.description },

@@ -18,6 +18,7 @@ export function LocaleSelector({
   className?: string;
 }) {
   const locale = getLocale();
+  if (locales.length < 2) return null;
 
   function handleSwitch(newLocale: string) {
     // Writes the locale cookie and reloads on the localized URL.

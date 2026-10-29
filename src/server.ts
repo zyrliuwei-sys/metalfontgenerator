@@ -28,9 +28,15 @@ function ensureCloudflareEnv(): Promise<void> {
 // getLocale() resolves per-request (AsyncLocalStorage) during SSR.
 export default {
   async fetch(req: Request): Promise<Response> {
+    const url = new URL(req.url);
+    if (url.pathname === '/zh' || url.pathname.startsWith('/zh/')) {
+      url.pathname = url.pathname.slice(3) || '/';
+      return Response.redirect(url, 308);
+    }
+
     await ensureCloudflareEnv();
     const response = await paraglideMiddleware(req, () => handler.fetch(req));
-    const utmSource = new URL(req.url).searchParams.get('utm_source');
+    const utmSource = url.searchParams.get('utm_source');
     const existing = getCookieFromHeader(
       req.headers.get('cookie'),
       'utm_source'

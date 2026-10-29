@@ -38,7 +38,7 @@ export function Audiences() {
 
         <ul className="grid gap-10 sm:grid-cols-2">
           {AUDIENCES.map((a) => (
-            <li key={a.title}>
+            <li key={a.title()}>
               <h3 className="text-lg font-semibold tracking-tight">
                 {a.title()}
               </h3>

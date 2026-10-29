@@ -18,10 +18,7 @@ async function checkAdmin(request: Request) {
 function postUrls(request: Request, slug: string) {
   const origin = new URL(request.url).origin;
   const encodedSlug = encodeURIComponent(slug);
-  return [
-    new URL(`/blog/${encodedSlug}`, origin).href,
-    new URL(`/zh/blog/${encodedSlug}`, origin).href,
-  ];
+  return [new URL(`/blog/${encodedSlug}`, origin).href];
 }
 
 function shouldNotifyPost(status: string | undefined) {

@@ -5,6 +5,7 @@ import {
   type CSSProperties,
   type FormEvent,
 } from 'react';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import {
   ArrowDownRight,
   ArrowUpRight,
@@ -26,15 +27,23 @@ import {
 import { signIn, signOut, useSession } from '@/core/auth/client';
 import { Link } from '@/core/i18n/navigation';
 import { envConfigs } from '@/config';
+import { ApiError, apiGet, apiPost } from '@/lib/api-client';
 import { metalFaq } from '@/lib/metal-faq';
-import { exportMetalFont } from '@/lib/metal-font-export';
 import { m } from '@/paraglide/messages.js';
 import { localizeHref } from '@/paraglide/runtime.js';
 import { useUserPermissions } from '@/hooks/use-user-permissions';
+import { MetalFontPricing } from '@/blocks/metal-font-pricing';
 import { SiteFooter } from '@/components/site-footer';
 
 type Finish = 'steel' | 'copper' | 'black-chrome' | 'brushed';
 type Orbit = 'front' | 'three-quarter' | 'profile';
+
+type MetalFontAccess = {
+  authenticated: boolean;
+  hasPaidOrder: boolean;
+  balance: number;
+  requiredCredits: number;
+};
 
 const FINISHES: Array<{ id: Finish; label: () => string; swatch: string }> = [
   {
@@ -455,6 +464,7 @@ export function Header() {
           <nav className="metal-nav" aria-label={m['metal.nav.label']()}>
             <Link href="/#workbench">{m['metal.nav.studio']()}</Link>
             <Link href="/#materials">{m['metal.nav.materials']()}</Link>
+            <Link href="/#pricing">{m['metal.nav.pricing']()}</Link>
             <Link href="/heavy-metal-font-generator">
               Heavy Metal Font Generator
             </Link>
@@ -500,6 +510,9 @@ export function Header() {
             </Link>
             <Link href="/#materials" onClick={() => setMenuOpen(false)}>
               {m['metal.nav.materials']()}
+            </Link>
+            <Link href="/#pricing" onClick={() => setMenuOpen(false)}>
+              {m['metal.nav.pricing']()}
             </Link>
             {user ? (
               <HeaderAccount user={user} />
@@ -555,6 +568,8 @@ function RangeControl({
 }
 
 export function MetalFontStudio({ heavy = false }: { heavy?: boolean }) {
+  const { data: session, isPending: sessionPending } = useSession();
+  const queryClient = useQueryClient();
   const [word, setWord] = useState(heavy ? 'THUNDER' : 'FORGE');
   const [heroFinish, setHeroFinish] = useState<Finish>('steel');
   const [finish, setFinish] = useState<Finish>('steel');
@@ -569,7 +584,64 @@ export function MetalFontStudio({ heavy = false }: { heavy?: boolean }) {
   const [filename, setFilename] = useState('');
   const [isExporting, setIsExporting] = useState(false);
   const [exportError, setExportError] = useState('');
+  const [generatedImageUrl, setGeneratedImageUrl] = useState('');
+  const [generatedImageId, setGeneratedImageId] = useState('');
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const accessQuery = useQuery({
+    queryKey: ['metal-font-access', session?.user.id],
+    queryFn: () => apiGet<MetalFontAccess>('/api/metal-font'),
+    enabled: Boolean(session?.user),
+  });
+  const needsPurchase =
+    !session?.user || accessQuery.data?.hasPaidOrder === false;
+
+  const showPricing = () => {
+    if (heavy) {
+      window.location.assign(localizeHref('/#pricing'));
+      return;
+    }
+    document.getElementById('pricing')?.scrollIntoView({
+      behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches
+        ? 'auto'
+        : 'smooth',
+    });
+  };
+
+  const generateMutation = useMutation({
+    mutationFn: (input: {
+      text: string;
+      finish: Finish;
+      angle: number;
+      extrusion: number;
+      light: number;
+      tracking: number;
+    }) =>
+      apiPost<{
+        imageUrl: string;
+        id?: string;
+      }>('/api/metal-font', input),
+    onSuccess: (result) => {
+      setGeneratedImageUrl(result.imageUrl);
+      setGeneratedImageId(result.id || '');
+      setStatus('ready');
+      queryClient.invalidateQueries({ queryKey: ['metal-font-access'] });
+      queryClient.invalidateQueries({ queryKey: ['user-credits'] });
+    },
+    onError: (error: Error) => {
+      setStatus('idle');
+      const reason =
+        error instanceof ApiError
+          ? (error.data as { reason?: string } | undefined)?.reason
+          : undefined;
+      setExportError(
+        reason === 'payment_required' || reason === 'sign_in_required'
+          ? m['metal.studio.payment_required']()
+          : error.message || m['metal.studio.generation_error']()
+      );
+      queryClient.invalidateQueries({ queryKey: ['metal-font-access'] });
+    },
+  });
 
   const reset = () => {
     setWord(heavy ? 'THUNDER' : 'FORGE');
@@ -581,11 +653,52 @@ export function MetalFontStudio({ heavy = false }: { heavy?: boolean }) {
     setTracking(heavy ? -1 : 0);
     setStatus('idle');
     setFilename('');
+    setExportError('');
+    setGeneratedImageUrl('');
+    setGeneratedImageId('');
   };
 
-  const generate = () => {
+  const generate = async () => {
+    if (!session?.user) {
+      setExportError(m['metal.studio.payment_required']());
+      showPricing();
+      return;
+    }
+
+    const access = await accessQuery.refetch();
+    if (access.isError || !access.data) {
+      setExportError(m['metal.studio.access_error']());
+      return;
+    }
+    if (!access.data.authenticated || !access.data.hasPaidOrder) {
+      setExportError(m['metal.studio.payment_required']());
+      showPricing();
+      return;
+    }
+    if (access.data.balance < access.data.requiredCredits) {
+      setExportError(m['metal.studio.insufficient_credits']());
+      showPricing();
+      return;
+    }
+
+    const text = word.trim();
+    if (!text) {
+      setExportError(m['metal.studio.word_required']());
+      return;
+    }
+
+    setExportError('');
+    setGeneratedImageUrl('');
+    setGeneratedImageId('');
     setStatus('generating');
-    window.setTimeout(() => setStatus('ready'), 820);
+    generateMutation.mutate({
+      text,
+      finish,
+      angle,
+      extrusion,
+      light,
+      tracking,
+    });
   };
 
   const selectMaterial = (selectedFinish: Finish) => {
@@ -599,22 +712,19 @@ export function MetalFontStudio({ heavy = false }: { heavy?: boolean }) {
   };
 
   const download = async () => {
+    if (!generatedImageUrl) return;
     setIsExporting(true);
     setExportError('');
     try {
-      const preview = document.querySelector('.metal-word-workbench');
-      const fontFamily = preview
-        ? getComputedStyle(preview).fontFamily
-        : 'sans-serif';
-      await exportMetalFont({
-        word: word || 'TYPE',
-        finish,
-        angle,
-        extrusion,
-        light,
-        tracking,
-        fontFamily,
-      });
+      const generatedUrl = generatedImageId
+        ? `/api/metal-font?download=${encodeURIComponent(generatedImageId)}`
+        : generatedImageUrl;
+      const link = document.createElement('a');
+      link.href = generatedUrl;
+      link.download = `metalfontgenerator-${word.replace(/[^a-z0-9_-]/gi, '-').slice(0, 40) || 'text'}.jpg`;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
       setStatus('exported');
     } catch {
       setExportError(m['metal.studio.export_error']());
@@ -753,15 +863,23 @@ export function MetalFontStudio({ heavy = false }: { heavy?: boolean }) {
                   <span>512</span>
                 </div>
                 <div className="metal-canvas-word">
-                  <MetalWord
-                    word={word || 'TYPE'}
-                    className="metal-word-workbench"
-                    finish={finish}
-                    angle={angle}
-                    extrusion={extrusion}
-                    light={light}
-                    tracking={tracking}
-                  />
+                  {generatedImageUrl ? (
+                    <img
+                      className="metal-ai-result"
+                      src={generatedImageUrl}
+                      alt={`${word || 'Metal font'} generated with Nano Banana 2.1`}
+                    />
+                  ) : (
+                    <MetalWord
+                      word={word || 'TYPE'}
+                      className="metal-word-workbench"
+                      finish={finish}
+                      angle={angle}
+                      extrusion={extrusion}
+                      light={light}
+                      tracking={tracking}
+                    />
+                  )}
                 </div>
                 <div className="metal-canvas-coordinates">
                   <span>X 240</span>
@@ -987,18 +1105,27 @@ export function MetalFontStudio({ heavy = false }: { heavy?: boolean }) {
                   type="button"
                   className="metal-generate-button"
                   onClick={generate}
-                  disabled={status === 'generating'}
+                  disabled={
+                    sessionPending ||
+                    accessQuery.isFetching ||
+                    status === 'generating' ||
+                    generateMutation.isPending
+                  }
                 >
                   <Sparkles size={16} aria-hidden="true" />
                   {status === 'generating'
                     ? m['metal.studio.generating']()
-                    : m['metal.studio.generate']()}
+                    : needsPurchase
+                      ? m['metal.studio.purchase_to_generate']()
+                      : m['metal.studio.generate']()}
                 </button>
                 <button
                   type="button"
                   className="metal-export-button"
                   onClick={download}
-                  disabled={status === 'generating' || isExporting}
+                  disabled={
+                    !generatedImageUrl || status === 'generating' || isExporting
+                  }
                   aria-label={m['metal.studio.export']()}
                   title={m['metal.studio.export']()}
                   aria-busy={isExporting}
@@ -1013,7 +1140,9 @@ export function MetalFontStudio({ heavy = false }: { heavy?: boolean }) {
               ) : null}
               <p className="metal-credit-note">
                 <SlidersHorizontal size={14} aria-hidden="true" />
-                {m['metal.studio.credit_note']()}
+                {needsPurchase
+                  ? m['metal.studio.payment_required']()
+                  : m['metal.studio.credit_note']()}
               </p>
             </div>
           </div>
@@ -1021,6 +1150,7 @@ export function MetalFontStudio({ heavy = false }: { heavy?: boolean }) {
 
         {!heavy ? (
           <>
+            <MetalFontPricing />
             <section className="metal-materials-section" id="materials">
               <div className="metal-section-heading metal-section-heading-wide">
                 <div>
@@ -1183,6 +1313,7 @@ export function Footer() {
             { label: m['y2k.name'](), href: '/y2k-font-maker' },
             { label: m['metal.nav.studio'](), href: '/#workbench' },
             { label: m['metal.nav.materials'](), href: '/#materials' },
+            { label: m['metal.nav.pricing'](), href: '/#pricing' },
           ],
         },
         {

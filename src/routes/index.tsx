@@ -25,7 +25,7 @@ function seoSchema(homeUrl: string, description: string, locale: string) {
         operatingSystem: 'Web browser',
         description,
       },
-      faqSchema(metalFaq('home', locale as 'en' | 'zh')),
+      faqSchema(metalFaq('home', locale as (typeof locales)[number])),
     ],
   };
 }

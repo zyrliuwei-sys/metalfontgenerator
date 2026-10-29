@@ -30,7 +30,7 @@ export function Features() {
 
         <div className="grid gap-12 md:grid-cols-3">
           {ITEMS.map((item) => (
-            <div key={item.title}>
+            <div key={item.title()}>
               <h3 className="text-xl font-semibold tracking-tight">
                 {item.title()}
               </h3>

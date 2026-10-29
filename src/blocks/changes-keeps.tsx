@@ -47,7 +47,7 @@ export function ChangesKeeps() {
             </h3>
             <ul className="mt-6 space-y-3.5">
               {CHANGES.map((item) => (
-                <li key={item} className="flex items-start gap-3">
+                <li key={item()} className="flex items-start gap-3">
                   <span className="bg-primary mt-2 size-1.5 shrink-0 rounded-full" />
                   <span className="leading-relaxed">{item()}</span>
                 </li>
@@ -64,7 +64,7 @@ export function ChangesKeeps() {
             </h3>
             <ul className="mt-6 space-y-3.5">
               {KEEPS.map((item) => (
-                <li key={item} className="flex items-start gap-3">
+                <li key={item()} className="flex items-start gap-3">
                   <Check className="mt-1 size-4 shrink-0 text-neutral-900" />
                   <span className="leading-relaxed">{item()}</span>
                 </li>
