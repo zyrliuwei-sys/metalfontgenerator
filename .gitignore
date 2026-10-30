@@ -67,3 +67,6 @@ package-lock.json
 
 # throwaway Cloudflare API token handoff (shredded after upload)
 .cf-api-token
+
+# Local backups made by the IndexNow installer
+/.indexnow-backup-*/
