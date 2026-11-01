@@ -1534,5 +1534,8 @@
   "metal.guest.name": "Guest",
   "metal.guest.hint": "Purchases are saved on this device",
   "metal.guest.error": "Could not start a guest session. Please try again.",
-  "metal.pricing.preparing": "Preparing checkout…"
+  "metal.pricing.preparing": "Preparing checkout…",
+  "metal.paywall.kicker": "Unlock generation",
+  "metal.paywall.title": "Purchase credits to generate",
+  "metal.paywall.description": "Pick a one-time credit pack or a monthly plan. Checkout is one step away — generation unlocks the moment payment completes."
 }

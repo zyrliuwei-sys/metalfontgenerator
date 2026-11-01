@@ -1,6 +1,6 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useMutation } from '@tanstack/react-query';
-import { ArrowUpRight, Check, Sparkles } from 'lucide-react';
+import { ArrowUpRight, Check, Sparkles, X } from 'lucide-react';
 
 import { signInAsGuest, useSession } from '@/core/auth/client';
 import {
@@ -22,9 +22,10 @@ function formatPrice(priceInCents: number): string {
   }).format(priceInCents / 100);
 }
 
-export function MetalFontPricing() {
-  const { data: session, isPending: sessionPending } = useSession();
-  const [billing, setBilling] = useState<MetalFontPricingBilling>('one_time');
+// No sign-up wall: visitors without a session get a silent guest account,
+// the checkout attaches to it, and a later sign-in claims the purchases.
+function useMetalCheckout() {
+  const { data: session } = useSession();
   const [error, setError] = useState('');
   const [preparingGuest, setPreparingGuest] = useState(false);
 
@@ -42,8 +43,6 @@ export function MetalFontPricing() {
     },
   });
 
-  // No sign-up wall: visitors without a session get a silent guest account,
-  // the checkout attaches to it, and a later sign-in claims the purchases.
   const startCheckout = async (option: MetalFontPricingOption) => {
     setError('');
 
@@ -60,6 +59,20 @@ export function MetalFontPricing() {
     checkoutMutation.mutate(option);
   };
 
+  return {
+    sessionPending: !session && session !== null,
+    error,
+    preparingGuest,
+    checkoutMutation,
+    startCheckout,
+  };
+}
+
+export function MetalPricingPicker() {
+  const { error, preparingGuest, checkoutMutation, startCheckout } =
+    useMetalCheckout();
+  const [billing, setBilling] = useState<MetalFontPricingBilling>('one_time');
+
   const visibleOptions = (tier: MetalFontPricingTier) =>
     metalFontPricingOptions.filter(
       (option) => option.tier === tier && option.billing === billing
@@ -71,15 +84,7 @@ export function MetalFontPricing() {
       : m['metal.pricing.subscribe']();
 
   return (
-    <section className="metal-pricing-section" id="pricing">
-      <div className="metal-pricing-heading">
-        <div>
-          <p className="metal-kicker">{m['metal.pricing.kicker']()}</p>
-          <h2>{m['metal.pricing.title']()}</h2>
-        </div>
-        <p>{m['metal.pricing.description']()}</p>
-      </div>
-
+    <div className="metal-pricing-picker">
       <div className="metal-pricing-toolbar">
         <div className="metal-pricing-switch" role="tablist">
           <button
@@ -87,10 +92,7 @@ export function MetalFontPricing() {
             role="tab"
             aria-selected={billing === 'one_time'}
             className={billing === 'one_time' ? 'is-selected' : ''}
-            onClick={() => {
-              setBilling('one_time');
-              setError('');
-            }}
+            onClick={() => setBilling('one_time')}
           >
             {m['metal.pricing.one_time']()}
           </button>
@@ -99,10 +101,7 @@ export function MetalFontPricing() {
             role="tab"
             aria-selected={billing === 'monthly'}
             className={billing === 'monthly' ? 'is-selected' : ''}
-            onClick={() => {
-              setBilling('monthly');
-              setError('');
-            }}
+            onClick={() => setBilling('monthly')}
           >
             {m['metal.pricing.monthly']()}
           </button>
@@ -167,11 +166,7 @@ export function MetalFontPricing() {
                       <button
                         type="button"
                         className="metal-pricing-buy"
-                        disabled={
-                          sessionPending ||
-                          preparingGuest ||
-                          checkoutMutation.isPending
-                        }
+                        disabled={preparingGuest || checkoutMutation.isPending}
                         onClick={() => startCheckout(option)}
                       >
                         {isPending
@@ -200,6 +195,70 @@ export function MetalFontPricing() {
           ? m['metal.pricing.one_time_note']()
           : m['metal.pricing.monthly_note']()}
       </p>
+    </div>
+  );
+}
+
+export function MetalPaywallModal({ onClose }: { onClose: () => void }) {
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') onClose();
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [onClose]);
+
+  return (
+    <div
+      className="metal-login-backdrop"
+      role="presentation"
+      onMouseDown={(event) => {
+        if (event.target === event.currentTarget) onClose();
+      }}
+    >
+      <section
+        className="metal-login-panel metal-paywall-panel"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="metal-paywall-title"
+        onMouseDown={(event) => event.stopPropagation()}
+      >
+        <div className="metal-login-panel-topline">
+          <span>{m['metal.paywall.kicker']()}</span>
+          <button
+            type="button"
+            className="metal-login-close"
+            onClick={onClose}
+            aria-label={m['metal.auth.close']()}
+          >
+            <X size={17} aria-hidden="true" />
+          </button>
+        </div>
+        <div className="metal-login-heading">
+          <h2 id="metal-paywall-title">{m['metal.paywall.title']()}</h2>
+          <p>{m['metal.paywall.description']()}</p>
+        </div>
+        <div className="metal-paywall-body">
+          <MetalPricingPicker />
+        </div>
+      </section>
+    </div>
+  );
+}
+
+export function MetalFontPricing() {
+  return (
+    <section className="metal-pricing-section" id="pricing">
+      <div className="metal-pricing-heading">
+        <div>
+          <p className="metal-kicker">{m['metal.pricing.kicker']()}</p>
+          <h2>{m['metal.pricing.title']()}</h2>
+        </div>
+        <p>{m['metal.pricing.description']()}</p>
+      </div>
+
+      <MetalPricingPicker />
     </section>
   );
 }

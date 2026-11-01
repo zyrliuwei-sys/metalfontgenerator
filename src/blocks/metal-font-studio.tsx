@@ -32,7 +32,10 @@ import { metalFaq } from '@/lib/metal-faq';
 import { m } from '@/paraglide/messages.js';
 import { localizeHref } from '@/paraglide/runtime.js';
 import { useUserPermissions } from '@/hooks/use-user-permissions';
-import { MetalFontPricing } from '@/blocks/metal-font-pricing';
+import {
+  MetalFontPricing,
+  MetalPaywallModal,
+} from '@/blocks/metal-font-pricing';
 import { SiteFooter } from '@/components/site-footer';
 
 type Finish = 'steel' | 'copper' | 'black-chrome' | 'brushed';
@@ -608,6 +611,7 @@ export function MetalFontStudio({ heavy = false }: { heavy?: boolean }) {
   const [generatedImageUrl, setGeneratedImageUrl] = useState('');
   const [generatedImageId, setGeneratedImageId] = useState('');
   const [preparingGuest, setPreparingGuest] = useState(false);
+  const [paywallOpen, setPaywallOpen] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const accessQuery = useQuery({
@@ -617,18 +621,6 @@ export function MetalFontStudio({ heavy = false }: { heavy?: boolean }) {
   });
   const needsPurchase =
     !session?.user || accessQuery.data?.hasPaidOrder === false;
-
-  const showPricing = () => {
-    if (heavy) {
-      window.location.assign(localizeHref('/#pricing'));
-      return;
-    }
-    document.getElementById('pricing')?.scrollIntoView({
-      behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches
-        ? 'auto'
-        : 'smooth',
-    });
-  };
 
   const generateMutation = useMutation({
     mutationFn: (input: {
@@ -656,11 +648,12 @@ export function MetalFontStudio({ heavy = false }: { heavy?: boolean }) {
         error instanceof ApiError
           ? (error.data as { reason?: string } | undefined)?.reason
           : undefined;
-      setExportError(
-        reason === 'payment_required' || reason === 'sign_in_required'
-          ? m['metal.studio.payment_required']()
-          : error.message || m['metal.studio.generation_error']()
-      );
+      if (reason === 'payment_required' || reason === 'sign_in_required') {
+        setPaywallOpen(true);
+        queryClient.invalidateQueries({ queryKey: ['metal-font-access'] });
+        return;
+      }
+      setExportError(error.message || m['metal.studio.generation_error']());
       queryClient.invalidateQueries({ queryKey: ['metal-font-access'] });
     },
   });
@@ -699,13 +692,12 @@ export function MetalFontStudio({ heavy = false }: { heavy?: boolean }) {
       return;
     }
     if (!access.data.authenticated || !access.data.hasPaidOrder) {
-      setExportError(m['metal.studio.payment_required']());
-      showPricing();
+      // No hint, no scroll — pop the paywall straight away.
+      setPaywallOpen(true);
       return;
     }
     if (access.data.balance < access.data.requiredCredits) {
-      setExportError(m['metal.studio.insufficient_credits']());
-      showPricing();
+      setPaywallOpen(true);
       return;
     }
 
@@ -1322,6 +1314,10 @@ export function MetalFontStudio({ heavy = false }: { heavy?: boolean }) {
       </main>
 
       <Footer />
+
+      {paywallOpen ? (
+        <MetalPaywallModal onClose={() => setPaywallOpen(false)} />
+      ) : null}
     </div>
   );
 }

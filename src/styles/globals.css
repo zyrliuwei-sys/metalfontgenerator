@@ -2916,6 +2916,40 @@
     animation: metal-login-panel-in 240ms var(--ease-out) both;
   }
 
+  .metal-paywall-panel {
+    width: min(100%, 46rem);
+    max-height: calc(100dvh - var(--space-10));
+    overflow-y: auto;
+  }
+
+  .metal-paywall-body {
+    margin-top: var(--space-6);
+  }
+
+  .metal-paywall-body .metal-pricing-tier-grid {
+    margin-top: 0;
+  }
+
+  .metal-paywall-body .metal-pricing-tier {
+    padding: var(--space-6);
+  }
+
+  .metal-paywall-body .metal-pricing-tier-heading {
+    padding-bottom: var(--space-4);
+  }
+
+  .metal-paywall-body .metal-pricing-tier-heading h3 {
+    font-size: clamp(1.3rem, 2vw, 1.8rem);
+  }
+
+  .metal-paywall-body .metal-pricing-option-grid {
+    grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
+  }
+
+  .metal-paywall-body .metal-pricing-card {
+    min-height: 0;
+  }
+
   .metal-login-panel-topline {
     display: flex;
     align-items: center;

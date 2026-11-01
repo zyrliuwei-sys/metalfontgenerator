@@ -1534,5 +1534,8 @@
   "metal.guest.name": "游客",
   "metal.guest.hint": "购买记录保存在本设备，登录后可随身携带",
   "metal.guest.error": "游客会话创建失败，请重试。",
-  "metal.pricing.preparing": "正在准备结账…"
+  "metal.pricing.preparing": "正在准备结账…",
+  "metal.paywall.kicker": "解锁生成",
+  "metal.paywall.title": "购买积分后即可生成",
+  "metal.paywall.description": "选择一次性积分包或包月套餐，支付完成即刻解锁生成。"
 }
