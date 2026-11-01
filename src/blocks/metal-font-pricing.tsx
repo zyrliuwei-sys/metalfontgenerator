@@ -11,7 +11,6 @@ import {
 } from '@/config/pricing';
 import { apiPost } from '@/lib/api-client';
 import { m } from '@/paraglide/messages.js';
-import { localizeHref } from '@/paraglide/runtime.js';
 
 const TIERS: MetalFontPricingTier[] = ['creator'];
 
