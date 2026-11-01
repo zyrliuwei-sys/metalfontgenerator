@@ -1530,5 +1530,9 @@
   "admin.indexnow.submitted": "Submitted {count} URLs",
   "admin.indexnow.result_count": "{submitted} of {count} URLs accepted",
   "admin.indexnow.key_placeholder": "Paste your IndexNow key",
-  "admin.indexnow.urls_label": "Specific URLs"
+  "admin.indexnow.urls_label": "Specific URLs",
+  "metal.guest.name": "Guest",
+  "metal.guest.hint": "Purchases are saved on this device",
+  "metal.guest.error": "Could not start a guest session. Please try again.",
+  "metal.pricing.preparing": "Preparing checkout…"
 }

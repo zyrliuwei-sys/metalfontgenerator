@@ -1530,5 +1530,9 @@
   "admin.indexnow.submitted": "已提交 {count} 个网址",
   "admin.indexnow.result_count": "共 {count} 个网址，已接受 {submitted} 个",
   "admin.indexnow.key_placeholder": "粘贴你的 IndexNow 密钥",
-  "admin.indexnow.urls_label": "指定网址"
+  "admin.indexnow.urls_label": "指定网址",
+  "metal.guest.name": "游客",
+  "metal.guest.hint": "购买记录保存在本设备，登录后可随身携带",
+  "metal.guest.error": "游客会话创建失败，请重试。",
+  "metal.pricing.preparing": "正在准备结账…"
 }
