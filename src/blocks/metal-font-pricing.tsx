@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useMutation } from '@tanstack/react-query';
 import { ArrowUpRight, Check, Sparkles } from 'lucide-react';
 
-import { useSession } from '@/core/auth/client';
+import { signInAsGuest, useSession } from '@/core/auth/client';
 import {
   metalFontPricingOptions,
   type MetalFontPricingBilling,
