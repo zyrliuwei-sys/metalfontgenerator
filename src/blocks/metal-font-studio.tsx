@@ -24,7 +24,7 @@ import {
   X,
 } from 'lucide-react';
 
-import { signIn, signOut, useSession } from '@/core/auth/client';
+import { signIn, signInAsGuest, signOut, useSession } from '@/core/auth/client';
 import { Link } from '@/core/i18n/navigation';
 import { envConfigs } from '@/config';
 import { ApiError, apiGet, apiPost } from '@/lib/api-client';
@@ -395,10 +395,18 @@ function LoginPanel({ onClose }: { onClose: () => void }) {
 function HeaderAccount({
   user,
 }: {
-  user: { name?: string | null; email: string; image?: string | null };
+  user: {
+    name?: string | null;
+    email: string;
+    image?: string | null;
+    isAnonymous?: boolean | null;
+  };
 }) {
   const { data } = useUserPermissions();
-  const displayName = user.name || user.email;
+  const isGuest = Boolean(user.isAnonymous);
+  const displayName = isGuest
+    ? m['metal.guest.name']()
+    : user.name || user.email;
   const initial = displayName.trim().charAt(0).toUpperCase() || '?';
 
   async function handleSignOut() {
@@ -410,7 +418,7 @@ function HeaderAccount({
     <details className="metal-account">
       <summary
         className="metal-account-trigger"
-        aria-label={`${m['common.nav.profile']()}: ${user.email}`}
+        aria-label={`${m['common.nav.profile']()}: ${displayName}`}
       >
         {user.image ? (
           <img className="metal-account-avatar" src={user.image} alt="" />
@@ -421,15 +429,28 @@ function HeaderAccount({
         )}
         <span className="metal-account-identity">
           <strong>{displayName}</strong>
-          <span>{user.email}</span>
+          <span>{isGuest ? m['metal.guest.hint']() : user.email}</span>
         </span>
         <ChevronDown size={15} aria-hidden="true" />
       </summary>
       <div className="metal-account-menu" role="menu">
-        <Link href="/settings" role="menuitem">
-          <Settings size={15} aria-hidden="true" />
-          {m['common.nav.settings']()}
-        </Link>
+        {isGuest ? (
+          <>
+            <Link href="/sign-in" role="menuitem">
+              <ArrowUpRight size={15} aria-hidden="true" />
+              {m['metal.footer.sign_in']()}
+            </Link>
+            <Link href="/sign-up" role="menuitem">
+              <ArrowUpRight size={15} aria-hidden="true" />
+              {m['metal.footer.sign_up']()}
+            </Link>
+          </>
+        ) : (
+          <Link href="/settings" role="menuitem">
+            <Settings size={15} aria-hidden="true" />
+            {m['common.nav.settings']()}
+          </Link>
+        )}
         {data?.isAdmin ? (
           <Link href="/admin" role="menuitem">
             <Shield size={15} aria-hidden="true" />
@@ -586,6 +607,7 @@ export function MetalFontStudio({ heavy = false }: { heavy?: boolean }) {
   const [exportError, setExportError] = useState('');
   const [generatedImageUrl, setGeneratedImageUrl] = useState('');
   const [generatedImageId, setGeneratedImageId] = useState('');
+  const [preparingGuest, setPreparingGuest] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const accessQuery = useQuery({
@@ -660,9 +682,15 @@ export function MetalFontStudio({ heavy = false }: { heavy?: boolean }) {
 
   const generate = async () => {
     if (!session?.user) {
-      setExportError(m['metal.studio.payment_required']());
-      showPricing();
-      return;
+      // Guest flow: silently create an anonymous account + session, then let
+      // the paid-order check below route the visitor to checkout.
+      setPreparingGuest(true);
+      const guestCreated = await signInAsGuest();
+      setPreparingGuest(false);
+      if (!guestCreated) {
+        setExportError(m['metal.guest.error']());
+        return;
+      }
     }
 
     const access = await accessQuery.refetch();
@@ -1107,6 +1135,7 @@ export function MetalFontStudio({ heavy = false }: { heavy?: boolean }) {
                   onClick={generate}
                   disabled={
                     sessionPending ||
+                    preparingGuest ||
                     accessQuery.isFetching ||
                     status === 'generating' ||
                     generateMutation.isPending

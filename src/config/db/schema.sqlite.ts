@@ -29,6 +29,9 @@ export const user = table(
     emailVerified: integer('email_verified', { mode: 'boolean' })
       .default(false)
       .notNull(),
+    isAnonymous: integer('is_anonymous', { mode: 'boolean' })
+      .default(false)
+      .notNull(),
     image: text('image'),
     createdAt: integer('created_at', { mode: 'timestamp_ms' })
       .default(sqliteNowMs)

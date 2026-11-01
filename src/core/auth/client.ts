@@ -1,4 +1,4 @@
-import { oneTapClient } from 'better-auth/client/plugins';
+import { anonymousClient, oneTapClient } from 'better-auth/client/plugins';
 import { createAuthClient } from 'better-auth/react';
 
 const baseURL =
@@ -6,7 +6,10 @@ const baseURL =
     ? window.location.origin
     : import.meta.env?.VITE_APP_URL || 'http://localhost:3000';
 
-export const authClient = createAuthClient({ baseURL });
+export const authClient = createAuthClient({
+  baseURL,
+  plugins: [anonymousClient()],
+});
 
 export const {
   signIn,
@@ -16,6 +19,19 @@ export const {
   requestPasswordReset,
   resetPassword,
 } = authClient;
+
+/**
+ * Silently create a guest session so visitors can pay and generate without
+ * signing up. Returns false if the guest session could not be established.
+ */
+export async function signInAsGuest(): Promise<boolean> {
+  try {
+    const result = await authClient.signIn.anonymous();
+    return !result?.error;
+  } catch {
+    return false;
+  }
+}
 
 // Build a per-call auth client with the Google One Tap plugin attached.
 // The plugin needs the client_id at construction time, so we can't add

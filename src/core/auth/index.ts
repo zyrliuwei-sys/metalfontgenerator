@@ -1,7 +1,8 @@
 import { betterAuth, type BetterAuthOptions } from 'better-auth';
 import { drizzleAdapter } from 'better-auth/adapters/drizzle';
-import { oneTap } from 'better-auth/plugins';
+import { anonymous, oneTap } from 'better-auth/plugins';
 
+import { migrateGuestUserData } from '@/core/auth/guest';
 import { db } from '@/core/db';
 import type { EmailProvider } from '@/core/email';
 import { CloudflareEmailProvider } from '@/core/email/cloudflare';
@@ -142,9 +143,26 @@ function isEmailConfigured(configs: Record<string, string>): boolean {
 }
 
 function getAuthPlugins(configs: Record<string, string> | undefined) {
-  if (!configs) return [];
-  const plugins: any[] = [];
-  if (configs.google_client_id && configs.google_one_tap_enabled === 'true') {
+  const plugins: any[] = [
+    // Guest flow: visitors can pay and generate without signing up — the
+    // client silently creates an anonymous session. When the guest later
+    // signs in/up on the same browser, migrate their purchases to the real
+    // account (the plugin deletes the guest user right after this hook).
+    anonymous({
+      onLinkAccount: async ({ anonymousUser, newUser }) => {
+        try {
+          await migrateGuestUserData({
+            fromUserId: anonymousUser.user.id,
+            toUserId: newUser.user.id,
+            toUserEmail: newUser.user.email,
+          });
+        } catch (error) {
+          console.error('[auth] guest data migration failed', error);
+        }
+      },
+    }),
+  ];
+  if (configs?.google_client_id && configs.google_one_tap_enabled === 'true') {
     plugins.push(oneTap());
   }
   return plugins;
