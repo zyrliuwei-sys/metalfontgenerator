@@ -27,6 +27,7 @@ export function MetalFontPricing() {
   const { data: session, isPending: sessionPending } = useSession();
   const [billing, setBilling] = useState<MetalFontPricingBilling>('one_time');
   const [error, setError] = useState('');
+  const [preparingGuest, setPreparingGuest] = useState(false);
 
   const checkoutMutation = useMutation({
     mutationFn: (option: MetalFontPricingOption) =>
@@ -41,6 +42,24 @@ export function MetalFontPricing() {
       setError(checkoutError?.message || m['metal.pricing.checkout_error']());
     },
   });
+
+  // No sign-up wall: visitors without a session get a silent guest account,
+  // the checkout attaches to it, and a later sign-in claims the purchases.
+  const startCheckout = async (option: MetalFontPricingOption) => {
+    setError('');
+
+    if (!session?.user) {
+      setPreparingGuest(true);
+      const guestCreated = await signInAsGuest();
+      setPreparingGuest(false);
+      if (!guestCreated) {
+        setError(m['metal.guest.error']());
+        return;
+      }
+    }
+
+    checkoutMutation.mutate(option);
+  };
 
   const visibleOptions = (tier: MetalFontPricingTier) =>
     metalFontPricingOptions.filter(
@@ -149,23 +168,18 @@ export function MetalFontPricing() {
                       <button
                         type="button"
                         className="metal-pricing-buy"
-                        disabled={sessionPending || checkoutMutation.isPending}
-                        onClick={() => {
-                          if (!session?.user) {
-                            window.location.assign(
-                              localizeHref(
-                                `/sign-in?callbackUrl=${encodeURIComponent('/#pricing')}`
-                              )
-                            );
-                            return;
-                          }
-                          setError('');
-                          checkoutMutation.mutate(option);
-                        }}
+                        disabled={
+                          sessionPending ||
+                          preparingGuest ||
+                          checkoutMutation.isPending
+                        }
+                        onClick={() => startCheckout(option)}
                       >
                         {isPending
                           ? m['metal.pricing.opening_checkout']()
-                          : optionActionLabel}
+                          : preparingGuest
+                            ? m['metal.pricing.preparing']()
+                            : optionActionLabel}
                         <ArrowUpRight size={14} aria-hidden="true" />
                       </button>
                     </div>
